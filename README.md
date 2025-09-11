@@ -1,33 +1,6 @@
 # 🕐 Let's Sync Our Times? 🌍
 
-<div align="center">
-
-```
-╔════════════════════════════════════════════════════════════════════════════╗
-║                                                                            ║
-║   ▄▄▄█████▓ ██▓ ███▄ ▄███▓▓█████      ██████ ▓██   ██▓ ███▄    █  ▄████▄   ║
-║   ▓  ██▒ ▓▒▓██▒▓██▒▀█▀ ██▒▓█   ▀    ▒██    ▒  ▒██  ██▒ ██ ▀█   █ ▒██▀ ▀█   ║
-║   ▒ ▓██░ ▒░▒██▒▓██    ▓██░▒███      ░ ▓██▄     ▒██ ██░▓██  ▀█ ██▒▒▓█    ▄  ║
-║   ░ ▓██▓ ░ ░██░▒██    ▒██ ▒▓█  ▄      ▒   ██▒  ░ ▐██▓░▓██▒  ▐▌██▒▒▓▓▄ ▄██▒ ║
-║     ▒██▒ ░ ░██░▒██▒   ░██▒░▒████▒   ▒██████▒▒  ░ ██▒▓░▒██░   ▓██░▒ ▓███▀ ░ ║
-║     ▒ ░░   ░▓  ░ ▒░   ░  ░░░ ▒░ ░   ▒ ▒▓▒ ▒ ░   ██▒▒▒ ░ ▒░   ▒ ▒ ░ ░▒ ▒  ░ ║
-║       ░     ▒ ░░  ░      ░ ░ ░  ░   ░ ░▒  ░ ░ ▓██ ░▒░ ░ ░░   ░ ▒░  ░  ▒    ║
-║     ░       ▒ ░░      ░      ░      ░  ░  ░   ▒ ▒ ░░     ░   ░ ░ ░         ║
-║             ░         ░      ░  ░         ░   ░ ░              ░ ░ ░       ║
-║                                                ░ ░                  ░      ║
-║                                                                            ║
-║                                                                            ║
-║                       xXx What time is it there? xXx                       ║ 
-╚════════════════════════════════════════════════════════════════════════════╝
-```
-
-[![Ruby](https://img.shields.io/badge/Ruby-3.4.5-00ff66?style=for-the-badge&logo=ruby&logoColor=white)](https://www.ruby-lang.org/)
-[![Rails](https://img.shields.io/badge/Rails-8.0-66ff00?style=for-the-badge&logo=rubyonrails&logoColor=white)](https://rubyonrails.org/)
-[![License](https://img.shields.io/badge/License-MIT-88ff00?style=for-the-badge)](LICENSE)
-
-</div>
-
-## 🌟 About
+## What time is it there?
 
 A radical retro-styled time zone converter that transforms boring time calculations into a visual synthwave experience. Convert times across multiple cities with analog clocks that adapt their glow based on AM/PM - all wrapped in that sweet 80s aesthetic.
 
@@ -39,7 +12,7 @@ A radical retro-styled time zone converter that transforms boring time calculati
 
 - 🎯 **Natural Language Input** - Just type like you speak: "3:30pm new york in tokyo, paris"
 - 🕐 **Analog Clock Visualization** - Beautiful SVG clocks with AM/PM color coding
-- 🌍 **60+ Cities Supported** - Major cities worldwide with automatic timezone detection
+- 🌍 **1200+ Cities Supported** - Unprecedented global coverage with automatic timezone detection
 - 📱 **Fully Responsive** - Looks rad on mobile, tablet, and desktop
 - 🎨 **Retro 80s Aesthetic** - Neon green glow, scanlines, and synthwave vibes
 - ⚡ **Zero External Dependencies** - Pure Rails, no JavaScript frameworks needed
@@ -58,6 +31,10 @@ A radical retro-styled time zone converter that transforms boring time calculati
 ║ • ActiveSupport TimeZone               ║
 ╚════════════════════════════════════════╝
 ```
+
+[![Ruby](https://img.shields.io/badge/Ruby-3.4.5-00ff66?style=for-the-badge&logo=ruby&logoColor=white)](https://www.ruby-lang.org/)
+[![Rails](https://img.shields.io/badge/Rails-8.0-66ff00?style=for-the-badge&logo=rubyonrails&logoColor=white)](https://rubyonrails.org/)
+[![License](https://img.shields.io/badge/License-MIT-88ff00?style=for-the-badge)](LICENSE)
 
 ## 🚀 Quick Start
 
@@ -113,26 +90,97 @@ This app embraces the radical aesthetic of the 1980s:
 ## 🗺️ Supported Locations
 
 <details>
-<summary>Click to see all 60+ supported cities</summary>
+<summary>Click to see all 1200+ supported cities worldwide</summary>
 
-### Americas
-- New York, Los Angeles, Chicago, San Francisco
-- Toronto, Vancouver, Montreal
-- Mexico City, São Paulo, Buenos Aires
+### 🌏 Oceania & Pacific
+**Australia**: Sydney, Melbourne, Brisbane, Perth, Adelaide, Hobart, Darwin, Canberra  
+**New Zealand**: Auckland, Wellington, Christchurch  
+**Pacific Islands**: Fiji, Honolulu, Guam, Samoa, Tahiti, Port Moresby, Honiara, Noumea
 
-### Europe  
-- London, Paris, Berlin, Madrid, Rome
-- Amsterdam, Brussels, Vienna, Zurich
-- Moscow, Istanbul, Athens
+### 🌏 East Asia
+**Japan**: Tokyo, Osaka, Kyoto, Nagoya, Sapporo, Yokohama  
+**China**: Beijing, Shanghai, Guangzhou, Shenzhen, Chengdu, Wuhan, Tianjin, Hong Kong, Macau  
+**Korea**: Seoul, Busan  
+**Taiwan**: Taipei  
+**Philippines**: Manila, Cebu  
+**Mongolia**: Ulaanbaatar  
+**Russia (Far East)**: Vladivostok
 
-### Asia Pacific
-- Tokyo, Seoul, Beijing, Shanghai, Hong Kong
-- Singapore, Bangkok, Jakarta
-- Sydney, Melbourne, Auckland
+### 🌏 Southeast Asia
+**Singapore**, **Malaysia**: Kuala Lumpur  
+**Indonesia**: Jakarta, Bali  
+**Thailand**: Bangkok, Phuket  
+**Vietnam**: Hanoi, Ho Chi Minh City (Saigon)  
+**Cambodia**: Phnom Penh | **Laos**: Vientiane  
+**Myanmar**: Yangon | **Brunei**: Bandar Seri Begawan
 
-### Middle East & Africa
-- Dubai, Abu Dhabi, Cairo
-- Johannesburg, Cape Town
+### 🌏 South Asia
+**India**: Delhi, Mumbai, Bangalore, Kolkata, Chennai, Hyderabad, Pune, Ahmedabad  
+**Pakistan**: Karachi, Lahore, Islamabad  
+**Bangladesh**: Dhaka | **Sri Lanka**: Colombo  
+**Nepal**: Kathmandu | **Maldives**: Male | **Afghanistan**: Kabul
+
+### 🌍 Middle East
+**UAE**: Dubai, Abu Dhabi | **Qatar**: Doha | **Kuwait**: Kuwait City  
+**Saudi Arabia**: Riyadh, Jeddah, Mecca, Medina  
+**Oman**: Muscat | **Bahrain**: Manama  
+**Lebanon**: Beirut | **Syria**: Damascus | **Jordan**: Amman  
+**Israel**: Jerusalem, Tel Aviv | **Iraq**: Baghdad  
+**Iran**: Tehran | **Turkey**: Istanbul, Ankara  
+**Armenia**: Yerevan | **Azerbaijan**: Baku | **Georgia**: Tbilisi  
+**Cyprus**: Nicosia
+
+### 🌍 Africa
+**North Africa**: Cairo, Alexandria, Algiers, Tunis, Casablanca, Rabat, Marrakech, Tripoli  
+**West Africa**: Lagos, Abuja, Accra, Dakar, Abidjan  
+**East Africa**: Nairobi, Addis Ababa, Dar es Salaam, Kampala, Khartoum  
+**Central Africa**: Kinshasa  
+**Southern Africa**: Johannesburg, Cape Town, Durban, Pretoria, Harare, Lusaka, Windhoek, Gaborone, Maputo  
+**Islands**: Antananarivo, Port Louis
+
+### 🌍 Europe
+**UK & Ireland**: London, Manchester, Birmingham, Glasgow, Edinburgh, Belfast, Cardiff, Dublin, Cork  
+**France**: Paris, Lyon, Marseille, Nice, Bordeaux  
+**Germany**: Berlin, Munich, Frankfurt, Hamburg, Cologne, Stuttgart, Dusseldorf  
+**Spain**: Madrid, Barcelona, Valencia, Seville, Malaga, Bilbao  
+**Portugal**: Lisbon, Porto  
+**Italy**: Rome, Milan, Naples, Turin, Venice, Florence  
+**Netherlands**: Amsterdam, Rotterdam, The Hague  
+**Belgium**: Brussels, Antwerp | **Luxembourg**  
+**Switzerland**: Zurich, Geneva, Bern, Basel  
+**Austria**: Vienna  
+**Nordics**: Copenhagen, Stockholm, Oslo, Helsinki, Reykjavik  
+**Eastern Europe**: Warsaw, Krakow, Prague, Budapest, Bucharest  
+**Balkans**: Athens, Sofia, Belgrade, Zagreb, Ljubljana, Sarajevo, Skopje, Tirana  
+**Baltics**: Tallinn, Riga, Vilnius  
+**Russia & Belarus**: Moscow, St Petersburg, Novosibirsk, Yekaterinburg, Minsk  
+**Ukraine**: Kyiv  
+**Microstates**: Monaco, Vatican City, San Marino, Andorra, Liechtenstein (Vaduz), Malta (Valletta)
+
+### 🌎 North America
+**USA East Coast**: New York, Boston, Philadelphia, Washington DC, Baltimore, Miami, Orlando, Atlanta, Charlotte, Detroit, Cleveland, Pittsburgh, Buffalo  
+**USA Central**: Chicago, Houston, Dallas, San Antonio, Austin, Memphis, Nashville, New Orleans, Milwaukee, Minneapolis, St Louis, Kansas City  
+**USA Mountain**: Denver, Salt Lake City, Albuquerque, Phoenix, Tucson  
+**USA West Coast**: Los Angeles, San Francisco, San Diego, San Jose, Seattle, Portland, Sacramento, Oakland, Las Vegas  
+**Alaska**: Anchorage, Fairbanks, Juneau  
+**Hawaii**: Honolulu  
+**Canada**: Toronto, Montreal, Ottawa, Quebec City, Vancouver, Calgary, Edmonton, Winnipeg, Halifax, St. John's, Regina, Saskatoon, Whitehorse, Yellowknife, Iqaluit
+
+### 🌎 Central America & Caribbean
+**Mexico**: Mexico City, Guadalajara, Monterrey, Cancun, Tijuana  
+**Central America**: Guatemala City, San Salvador, Tegucigalpa, Managua, San Jose, Panama City, Belize City  
+**Caribbean**: Havana, Santo Domingo, San Juan, Kingston, Nassau, Port-au-Prince, Bridgetown, Port of Spain  
+**Caribbean Islands**: Castries, Basseterre, Roseau, St. George's, Oranjestad, Willemstad, and more
+
+### 🌎 South America
+**Colombia**: Bogota, Medellin, Cali | **Venezuela**: Caracas  
+**Ecuador**: Quito, Guayaquil | **Peru**: Lima  
+**Bolivia**: La Paz, Sucre | **Chile**: Santiago, Valparaiso  
+**Argentina**: Buenos Aires, Cordoba, Rosario, Mendoza  
+**Uruguay**: Montevideo | **Paraguay**: Asuncion  
+**Brazil**: São Paulo, Rio de Janeiro, Brasilia, Salvador, Fortaleza, Belo Horizonte, Manaus, Porto Alegre, Recife, Curitiba  
+**Guianas**: Georgetown, Paramaribo, Cayenne  
+**Falklands**: Stanley
 
 </details>
 
