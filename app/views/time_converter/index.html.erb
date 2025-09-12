@@ -141,7 +141,7 @@
         0 0 10px rgba(0, 255, 100, 0.8),
         0 0 20px rgba(0, 255, 100, 0.8),
         0 0 30px rgba(0, 255, 100, 0.8);
-      animation: glowPulse 10s ease-in-out infinite;
+      animation: glowPulse 10Js ease-in-out infinite;
     }
 
     @keyframes glowPulse {
@@ -457,6 +457,32 @@
       letter-spacing: 2px;
     }
 
+    .example-link {
+      color: rgba(0, 255, 100, 0.7);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      position: relative;
+    }
+
+    .example-link:hover {
+      color: #00ff66;
+      text-shadow: 0 0 10px rgba(0, 255, 100, 0.8);
+      transform: translateX(5px);
+    }
+
+    .example-link::before {
+      content: '▸ ';
+      color: #00ff66;
+      margin-right: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .example-link:hover::before {
+      transform: translateX(3px);
+    }
+
     .scanlines {
       position: fixed;
       top: 0;
@@ -589,11 +615,13 @@
       <% end %>
       
       <% unless @query.present? %>
-        <p class="example-text">
-          <u>Examples</u><br>
-          <br>3:30pm new york in tokyo, paris<br>
-          <br>noon pst in est and gmt
-        </p>
+        <div class="example-text">
+          Type or click to try:<br>
+          <br><a href="#" class="example-link" data-query="3:30pm new york in tokyo, paris">3:30pm new york in tokyo, paris</a><br>
+          <br><a href="#" class="example-link" data-query="noon pst in est and gmt">noon pst in est and gmt</a><br>
+          <br><a href="#" class="example-link" data-query="9am london in sydney and singapore">9am london in sydney and singapore</a><br>
+          <br><a href="#" class="example-link" data-query="midnight utc in jst, ist and cet">midnight utc in jst, ist and cet</a>
+        </div>
       <% end %>
     </div>
 
@@ -694,5 +722,29 @@
       </div>
     <% end %>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Handle example clicks
+      const exampleLinks = document.querySelectorAll('.example-link');
+      const queryInput = document.querySelector('input[name="query"]');
+      const form = document.querySelector('form');
+      
+      exampleLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Get the query from data attribute
+          const query = this.getAttribute('data-query');
+          
+          // Set the input value
+          queryInput.value = query;
+          
+          // Submit the form
+          form.submit();
+        });
+      });
+    });
+  </script>
 </body>
 </html>
