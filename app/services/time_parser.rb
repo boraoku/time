@@ -1,4 +1,20 @@
 class TimeParser
+  # City disambiguation for same-named cities in different countries
+  CITY_COUNTRY_DISAMBIGUATION = {
+    'san jose (costa rica)' => 'Central America',
+    'san jose (usa)' => 'Pacific Time (US & Canada)',
+    "st john's (canada)" => 'Newfoundland',
+    "st john's (antigua)" => 'Atlantic Time (Canada)',
+    'naples (italy)' => 'Rome',
+    'naples (usa)' => 'Eastern Time (US & Canada)',
+    'birmingham (uk)' => 'London',
+    'birmingham (usa)' => 'Central Time (US & Canada)',
+    'st petersburg (russia)' => 'Moscow',
+    'st petersburg (usa)' => 'Eastern Time (US & Canada)',
+    'reading (uk)' => 'London',
+    'reading (usa)' => 'Eastern Time (US & Canada)'
+  }.freeze
+
   CITY_TIMEZONE_MAP = {
     # Oceania & Pacific
     'sydney' => 'Sydney',
@@ -267,7 +283,6 @@ class TimeParser
     'san francisco' => 'Pacific Time (US & Canada)',
     'sf' => 'Pacific Time (US & Canada)',
     'san diego' => 'Pacific Time (US & Canada)',
-    'san jose' => 'Pacific Time (US & Canada)',
     'seattle' => 'Pacific Time (US & Canada)',
     'portland' => 'Pacific Time (US & Canada)',
     'sacramento' => 'Pacific Time (US & Canada)',
@@ -352,7 +367,6 @@ class TimeParser
     'basseterre' => 'Atlantic Time (Canada)',
     'roseau' => 'Atlantic Time (Canada)',
     "st george's" => 'Atlantic Time (Canada)',
-    "st john's" => 'Atlantic Time (Canada)',
     'oranjestad' => 'Atlantic Time (Canada)',
     'willemstad' => 'Atlantic Time (Canada)',
     'philipsburg' => 'Atlantic Time (Canada)',
@@ -372,7 +386,6 @@ class TimeParser
     'jacksonville' => 'Eastern Time (US & Canada)',
     'fort lauderdale' => 'Eastern Time (US & Canada)',
     'west palm beach' => 'Eastern Time (US & Canada)',
-    'naples' => 'Eastern Time (US & Canada)',
     'savannah' => 'Eastern Time (US & Canada)',
     'charleston' => 'Eastern Time (US & Canada)',
     'columbia' => 'Eastern Time (US & Canada)',
@@ -412,7 +425,6 @@ class TimeParser
     'allentown' => 'Eastern Time (US & Canada)',
     'scranton' => 'Eastern Time (US & Canada)',
     'erie' => 'Eastern Time (US & Canada)',
-    'reading' => 'Eastern Time (US & Canada)',
     'lancaster' => 'Eastern Time (US & Canada)',
     'york' => 'Eastern Time (US & Canada)',
     'akron' => 'Eastern Time (US & Canada)',
@@ -463,13 +475,11 @@ class TimeParser
     'gulfport' => 'Central Time (US & Canada)',
     'mobile' => 'Central Time (US & Canada)',
     'montgomery' => 'Central Time (US & Canada)',
-    'birmingham' => 'Central Time (US & Canada)',
     'huntsville' => 'Central Time (US & Canada)',
     'tuscaloosa' => 'Central Time (US & Canada)',
     'pensacola' => 'Central Time (US & Canada)',
     'tallahassee' => 'Eastern Time (US & Canada)',
     'gainesville' => 'Eastern Time (US & Canada)',
-    'st petersburg' => 'Eastern Time (US & Canada)',
     'clearwater' => 'Eastern Time (US & Canada)',
     'cape coral' => 'Eastern Time (US & Canada)',
     'fort myers' => 'Eastern Time (US & Canada)',
@@ -717,7 +727,6 @@ class TimeParser
     'angers' => 'Paris',
     'nimes' => 'Paris',
     'cannes' => 'Paris',
-    'monaco' => 'Paris',
     'bonn' => 'Berlin',
     'mannheim' => 'Berlin',
     'karlsruhe' => 'Berlin',
@@ -1117,7 +1126,6 @@ class TimeParser
     'bratsk' => 'Irkutsk',
     'surgut' => 'Yekaterinburg',
     'angarsk' => 'Irkutsk',
-    'chelyabinsk' => 'Yekaterinburg',
     'petropavlovsk-kamchatsky' => 'Kamchatka',
     'yuzhno-sakhalinsk' => 'Sakhalin',
     'magadan' => 'Magadan',
@@ -1312,8 +1320,18 @@ class TimeParser
       
       converted_time = source_time_in_tz.in_time_zone(tz)
       
+      # Format city name properly - handle parentheses for country disambiguation
+      formatted_city = if city.include?('(')
+        parts = city.split(' (')
+        city_part = parts[0].split.map(&:capitalize).join(' ')
+        country_part = parts[1]&.chomp(')')&.split&.map(&:capitalize)&.join(' ')
+        country_part ? "#{city_part} (#{country_part})" : city_part
+      else
+        city.split.map(&:capitalize).join(' ')
+      end
+      
       results << {
-        city: city.split.map(&:capitalize).join(' '),
+        city: formatted_city,
         time: converted_time,
         timezone: tz.name,
         offset: tz.formatted_offset,
@@ -1370,7 +1388,10 @@ class TimeParser
   def get_timezone(city_or_tz)
     city_or_tz = city_or_tz.downcase.strip
     
-    if TIMEZONE_ABBREVIATIONS.key?(city_or_tz)
+    # Check for country disambiguation first
+    if CITY_COUNTRY_DISAMBIGUATION.key?(city_or_tz)
+      ActiveSupport::TimeZone[CITY_COUNTRY_DISAMBIGUATION[city_or_tz]]
+    elsif TIMEZONE_ABBREVIATIONS.key?(city_or_tz)
       ActiveSupport::TimeZone[TIMEZONE_ABBREVIATIONS[city_or_tz]]
     elsif CITY_TIMEZONE_MAP.key?(city_or_tz)
       ActiveSupport::TimeZone[CITY_TIMEZONE_MAP[city_or_tz]]

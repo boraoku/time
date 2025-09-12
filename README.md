@@ -13,6 +13,7 @@ A radical retro-styled time zone converter that transforms boring time calculati
 - 🎯 **Natural Language Input** - Just type like you speak: "3:30pm new york in tokyo, paris"
 - 🕐 **Analog Clock Visualization** - Beautiful SVG clocks with AM/PM color coding
 - 🌍 **1200+ Cities Supported** - Unprecedented global coverage with automatic timezone detection
+- 🏙️ **City Disambiguation** - Specify country for same-named cities: "san jose (usa)" vs "san jose (costa rica)"
 - 📱 **Fully Responsive** - Looks rad on mobile, tablet, and desktop
 - 🎨 **Retro 80s Aesthetic** - Neon green glow, scanlines, and synthwave vibes
 - ⚡ **Zero External Dependencies** - Pure Rails, no JavaScript frameworks needed
@@ -74,6 +75,14 @@ Input Examples:
 → "noon PST in EST and GMT"
 → "midnight london in sydney, LA, moscow"
 → "9:45 PM EST in London, Dubai, Singapore, Tokyo"
+
+City Disambiguation (for same-named cities):
+═══════════════════════════════════════════════════
+→ "10am san jose (usa) in london"
+→ "10am san jose (costa rica) in london"
+→ "3pm birmingham (uk) in birmingham (usa)"
+→ "2pm naples (italy) in naples (usa)"
+→ "5pm st petersburg (russia) in tokyo"
 ═══════════════════════════════════════════════════
 ```
 
