@@ -1345,6 +1345,13 @@ class TimeParser
   private
 
   def parse_source(source_part)
+    # Handle special time words
+    if source_part.include?('noon')
+      source_part = source_part.sub('noon', '12pm')
+    elsif source_part.include?('midnight')
+      source_part = source_part.sub('midnight', '12am')
+    end
+    
     time_match = source_part.match(/(\d{1,2}):?(\d{2})?\s*(am|pm)?/i)
     return [nil, nil] unless time_match
     
