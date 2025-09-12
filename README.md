@@ -193,6 +193,25 @@ This app embraces the radical aesthetic of the 1980s:
 
 </details>
 
+## 🚀 Production Deployment
+
+When deploying to production, you need to set the `SECRET_KEY_BASE` environment variable.
+
+1. Generate a secret key locally:
+```bash
+bin/rails secret
+```
+
+2. Set the generated key as an environment variable on your production server:
+```bash
+# Example for Heroku
+heroku config:set SECRET_KEY_BASE=<your_generated_secret>
+
+# For other platforms, add SECRET_KEY_BASE to your environment variables
+```
+
+This secret key is used by Rails to encrypt session cookies and other sensitive data.
+
 ## 🤝 Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
