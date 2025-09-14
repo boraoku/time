@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Let's sync our times!</title>
+  <title>TiME</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   
   <!-- Open Graph / Social Media Meta Tags -->
-  <meta property="og:title" content="Time Sync - Let's sync our times!">
+  <meta property="og:title" content="TiME - Synch your watches!">
   <meta property="og:description" content="A radical retro-styled time zone converter with 1200+ cities and 80s synthwave vibes">
   <meta property="og:image" content="/icon-512.png">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Time Sync - Let's sync our times!">
+  <meta name="twitter:title" content="TiME - Synch your watches!">
   <meta name="twitter:description" content="A radical retro-styled time zone converter with 1200+ cities">
   <meta name="twitter:image" content="/icon-512.png">
   
@@ -599,8 +599,8 @@
   <div class="scanlines"></div>
   
   <div class="container">
-    <h1>Let's sync our times!</h1>
-    <div class="subtitle">What time is it there?</div>
+    <h1>Synch your watches!</h1>
+    <div class="subtitle" id="subtitle">Not an hour sooner, not an hour later.</div>
     
     <div class="input-section">
       <%= form_with url: root_path, method: :get, local: true do |form| %>
@@ -725,6 +725,42 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Doc Brown quotes
+      const docQuotes = [
+        "Not an hour sooner, not an hour later.",
+        "Gonna build a time machine? Do it with some style!",
+        "If my calculations are correct...",
+        "Great Scott!",
+        "Roads? Where we're going, we don't need roads.",
+        "That's what Doc says!",
+        "Your future is whatever you make it.",
+        "Time circuits on. Flux capacitor... fluxing."
+      ];
+      
+      // Rotate subtitle quotes
+      const subtitle = document.getElementById('subtitle');
+      if (subtitle) {
+        // Start from a random index
+        let currentQuoteIndex = Math.floor(Math.random() * docQuotes.length);
+        
+        // Set initial random quote immediately
+        subtitle.textContent = docQuotes[currentQuoteIndex];
+        
+        // Change quote every 3 seconds
+        setInterval(function() {
+          currentQuoteIndex = (currentQuoteIndex + 1) % docQuotes.length;
+          subtitle.style.opacity = '0';
+          
+          setTimeout(function() {
+            subtitle.textContent = docQuotes[currentQuoteIndex];
+            subtitle.style.opacity = '0.8';
+          }, 300);
+        }, 3000);
+        
+        // Add transition for smooth fade
+        subtitle.style.transition = 'opacity 0.3s ease';
+      }
+      
       // Handle example clicks
       const exampleLinks = document.querySelectorAll('.example-link');
       const queryInput = document.querySelector('input[name="query"]');

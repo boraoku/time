@@ -1,8 +1,8 @@
-# 🕐 Let's Sync Our Times? 🌍
+# 🕐 TiME 🌍
 
-## What time is it there?
+## Synch your watches!
 
-A radical retro-styled time zone converter that transforms boring time calculations into a visual synthwave experience. Convert times across multiple cities with analog clocks that adapt their glow based on AM/PM - all wrapped in that sweet 80s aesthetic.
+TiME is a radical retro-styled time zone converter that transforms boring time calculations into a visual synthwave experience. Convert times across multiple cities with analog clocks that adapt their glow based on AM/PM - all wrapped in that sweet 80s aesthetic.
 
 <div align="center">
   <img src="app_v0.1.gif" alt="Time Sync App Demo" width="100%" style="border-radius: 10px; box-shadow: 0 0 30px rgba(0, 255, 100, 0.5);">
@@ -239,7 +239,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```
 ╔═══════════════════════════════════════╗
 ║         Made with ♡ and Rails         ║
-║         Let's sync our times!         ║
+║          Synch your watches!          ║
 ╚═══════════════════════════════════════╝
 ```
 

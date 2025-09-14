@@ -1,6 +1,6 @@
 {
-  "name": "Time Sync - Let's sync our times!",
-  "short_name": "Time Sync",
+  "name": "TiME - Synch your watches!",
+  "short_name": "TiME",
   "description": "A radical retro-styled time zone converter with 80s synthwave vibes",
   "start_url": "/",
   "display": "standalone",
