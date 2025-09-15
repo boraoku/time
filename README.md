@@ -86,6 +86,34 @@ City Disambiguation (for same-named cities):
 ═══════════════════════════════════════════════════
 ```
 
+### 🔗 URL Scheme
+
+TiME uses a clean, readable URL format for sharing and bookmarking time conversions:
+
+**Format Rules:**
+- `:` → `_` (colons become underscores)
+- ` in ` → `--` (the word "in" becomes double hyphen)
+- `,` or `and` → `~` (city separators become tilde)
+- ` ` → `-` (spaces become single hyphen)
+
+**URL Examples:**
+```
+"2:30pm new york in tokyo, paris"
+→ http://localhost:3000/?query=2_30pm-new-york--tokyo~paris
+
+"9am london in sydney and singapore"  
+→ http://localhost:3000/?query=9am-london--sydney~singapore
+
+"noon pst in est, gmt"
+→ http://localhost:3000/?query=noon-pst--est~gmt
+```
+
+These URLs are:
+- Safe for sharing via email and chat
+- Readable and understandable
+- Bookmark-friendly
+- Won't be mangled by browsers or URL shorteners
+
 ## 🎨 Design Philosophy
 
 This app embraces the radical aesthetic of the 1980s:
@@ -195,6 +223,8 @@ This app embraces the radical aesthetic of the 1980s:
 
 ## 🚀 Production Deployment
 
+### Environment Variables
+
 When deploying to production, you need to set the `SECRET_KEY_BASE` environment variable.
 
 1. Generate a secret key locally:
@@ -211,6 +241,34 @@ heroku config:set SECRET_KEY_BASE=<your_generated_secret>
 ```
 
 This secret key is used by Rails to encrypt session cookies and other sensitive data.
+
+### JavaScript Minification
+
+The application includes modular JavaScript files that should be minified for production:
+
+1. **Automatic minification** during asset precompilation:
+```bash
+RAILS_ENV=production rails assets:precompile
+```
+
+This will automatically minify all JavaScript files in `public/js/` using Terser.
+
+2. **Manual minification** (if needed):
+```bash
+RAILS_ENV=production rails assets:minify
+```
+
+The minification process:
+- Compresses and mangles JavaScript code
+- Removes console.log statements in production
+- Preserves ES6 module structure
+- Creates `.min.js` versions of all files
+
+**Note:** The app uses modular JavaScript architecture with files in:
+- `public/js/modules/quotes.js` - Quote rotation system
+- `public/js/modules/clock_renderer.js` - SVG clock rendering
+- `public/js/modules/animations.js` - Animation management
+- `public/js/modules/search.js` - AJAX search functionality
 
 ## 🤝 Contributing
 
