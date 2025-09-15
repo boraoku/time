@@ -29,6 +29,7 @@ namespace :assets do
 end
 
 # Hook into existing assets:precompile task
-Rake::Task['assets:precompile'].enhance do
-  Rake::Task['assets:minify'].invoke if Rails.env.production?
-end
+# Commented out - Propshaft with TerserCompiler already handles minification
+# Rake::Task['assets:precompile'].enhance do
+#   Rake::Task['assets:minify'].invoke if Rails.env.production?
+# end

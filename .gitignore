@@ -168,4 +168,6 @@ vendor/cache
 /tmp/storage/
 
 # Ignore public cache
-/public/cache/
+/public/cache
+/public/js/modules/*.min.js
+
