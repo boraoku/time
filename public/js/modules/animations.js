@@ -10,8 +10,8 @@ export const AnimationsModule = {
       // Start from 12 o'clock for initial render
       const startFrom12 = true; // Always start from 12 for initial clocks
       return clockRenderer.createClockHTML(result, animClass, startFrom12)
-        .replace('clock-wrapper', 
-          `clock-wrapper" style="animation-delay: ${delay}s, ${0.8 + delay}s`);
+        .replace('clock-wrapper',
+          `clock-wrapper" style="animation-delay: ${delay}s, ${1.3 + delay}s`);
     }).join('');
     
     container.innerHTML = clocksHTML;
@@ -29,23 +29,32 @@ export const AnimationsModule = {
             const hourAngle = hourHand.dataset.angle;
             hourHand.style.setProperty('--hour-angle', `${hourAngle}deg`);
             hourHand.classList.add('animate-initial');
-            
+
             // Set final transform after animation completes
             setTimeout(() => {
               hourHand.setAttribute('transform', `rotate(${hourAngle} 75 75)`);
             }, 1200);
           }
-          
+
           if (minuteHand && minuteHand.dataset.initial === 'true') {
             // Make sure CSS variables are set
             const minuteAngle = minuteHand.dataset.angle;
             minuteHand.style.setProperty('--minute-angle', `${minuteAngle}deg`);
             minuteHand.classList.add('animate-initial');
-            
+
             // Set final transform after animation completes
             setTimeout(() => {
               minuteHand.setAttribute('transform', `rotate(${minuteAngle} 75 75)`);
             }, 1200);
+          }
+
+          // Ensure float animation starts after hands finish animating
+          if (hourHand?.dataset.initial === 'true' || minuteHand?.dataset.initial === 'true') {
+            setTimeout(() => {
+              // Remove initial animation classes and ensure float animation is running
+              clockWrapper.classList.remove('initial-appear', 'slide-in');
+              clockWrapper.classList.add('existing');
+            }, 1300);
           }
         }
       });
@@ -93,8 +102,8 @@ export const AnimationsModule = {
       if (!processedCities.has(cityName)) {
         const delay = newClockIndex * 0.1;
         newClocksHTML += clockRenderer.createClockHTML(result, 'slide-in', true)
-          .replace('clock-wrapper', 
-            `clock-wrapper" style="animation-delay: ${delay}s, ${0.6 + delay}s`);
+          .replace('clock-wrapper',
+            `clock-wrapper" style="animation-delay: ${delay}s, ${1.3 + delay}s`);
         newClockElements.push(result);
         newClockIndex++;
       }
@@ -116,20 +125,29 @@ export const AnimationsModule = {
               const hourAngle = hourHand.dataset.angle;
               hourHand.style.setProperty('--hour-angle', `${hourAngle}deg`);
               hourHand.classList.add('animate-initial');
-              
+
               setTimeout(() => {
                 hourHand.setAttribute('transform', `rotate(${hourAngle} 75 75)`);
               }, 1200);
             }
-            
+
             if (minuteHand && minuteHand.dataset.initial === 'true') {
               const minuteAngle = minuteHand.dataset.angle;
               minuteHand.style.setProperty('--minute-angle', `${minuteAngle}deg`);
               minuteHand.classList.add('animate-initial');
-              
+
               setTimeout(() => {
                 minuteHand.setAttribute('transform', `rotate(${minuteAngle} 75 75)`);
               }, 1200);
+            }
+
+            // Ensure float animation starts after hands finish animating
+            if (hourHand?.dataset.initial === 'true' || minuteHand?.dataset.initial === 'true') {
+              setTimeout(() => {
+                // Remove initial animation classes and ensure float animation is running
+                clockWrapper.classList.remove('initial-appear', 'slide-in');
+                clockWrapper.classList.add('existing');
+              }, 1300);
             }
           }
         }
@@ -182,6 +200,9 @@ export const AnimationsModule = {
     const hourAngle = ((result.hour % 12) * 30 + result.minute * 0.5);
     const minuteAngle = result.minute * 6;
     const isPm = result.is_pm;
+
+    // Pause the bouncing animation while hands are animating
+    clockElement.classList.add('hands-animating');
     
     // Update hour hand with animation
     const hourHandGroup = clockElement.querySelector('.hour-hand-group');
@@ -208,7 +229,7 @@ export const AnimationsModule = {
         hourHandGroup.setAttribute('transform', `rotate(${hourAngle} 75 75)`);
       }, 800);
     }
-    
+
     // Update minute hand with animation
     const minuteHandGroup = clockElement.querySelector('.minute-hand-group');
     if (minuteHandGroup) {
@@ -217,23 +238,28 @@ export const AnimationsModule = {
       minuteHandGroup.style.setProperty('--minute-angle-from', `${currentMinuteAngle}deg`);
       minuteHandGroup.style.setProperty('--minute-angle', `${minuteAngle}deg`);
       minuteHandGroup.dataset.angle = minuteAngle;
-      
+
       // Remove any existing animation classes and add update animation
       minuteHandGroup.classList.remove('animate-initial', 'animate-update');
       void minuteHandGroup.offsetWidth; // Force reflow
       minuteHandGroup.classList.add('animate-update');
-      
+
       // Update colors
       const minuteLine = minuteHandGroup.querySelector('.minute-hand-line');
       const minuteInner = minuteHandGroup.querySelector('.minute-hand-line-inner');
       if (minuteLine) minuteLine.setAttribute('stroke', isPm ? '#66ff00' : '#00ff66');
       if (minuteInner) minuteInner.setAttribute('stroke', isPm ? '#004400' : '#003333');
-      
+
       // Update transform after animation completes
       setTimeout(() => {
         minuteHandGroup.setAttribute('transform', `rotate(${minuteAngle} 75 75)`);
       }, 800);
     }
+
+    // Resume bouncing animation after hands finish animating
+    setTimeout(() => {
+      clockElement.classList.remove('hands-animating');
+    }, 850);
     
     // Update clock face color
     const clockFace = clockElement.querySelector('.clock-face');

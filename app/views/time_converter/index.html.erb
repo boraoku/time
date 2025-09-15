@@ -300,14 +300,14 @@
 
     .clock-wrapper.initial-appear {
       animation: clockAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                float 3s ease-in-out infinite 0.8s;
+                float 3s ease-in-out infinite 1.3s;
       opacity: 0;
       transform: scale(0) rotate(-180deg);
     }
 
     .clock-wrapper.slide-in {
       animation: slideInNew 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                float 3s ease-in-out infinite 0.6s;
+                float 3s ease-in-out infinite 1.3s;
       opacity: 0;
       transform: translateX(100px) scale(0.8);
     }
@@ -365,6 +365,11 @@
     @keyframes float {
       0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
       50% { transform: translateY(-10px) scale(1) rotate(0deg); }
+    }
+
+    /* Pause bouncing when hands are animating */
+    .clock-wrapper.hands-animating {
+      animation-play-state: paused !important;
     }
 
     @keyframes rotateHourHand {
