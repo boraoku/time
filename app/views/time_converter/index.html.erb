@@ -367,8 +367,56 @@
       50% { transform: translateY(-10px) scale(1) rotate(0deg); }
     }
 
-    .clock-hand-transition {
-      transition: transform 1s cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+    @keyframes rotateHourHand {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(var(--hour-angle));
+      }
+    }
+    
+    @keyframes rotateMinuteHand {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(var(--minute-angle));
+      }
+    }
+    
+    @keyframes updateHourHand {
+      from {
+        transform: rotate(var(--hour-angle-from));
+      }
+      to {
+        transform: rotate(var(--hour-angle));
+      }
+    }
+    
+    @keyframes updateMinuteHand {
+      from {
+        transform: rotate(var(--minute-angle-from));
+      }
+      to {
+        transform: rotate(var(--minute-angle));
+      }
+    }
+    
+    .hour-hand-group.animate-initial {
+      animation: rotateHourHand 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    
+    .minute-hand-group.animate-initial {
+      animation: rotateMinuteHand 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    
+    .hour-hand-group.animate-update {
+      animation: updateHourHand 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+    }
+    
+    .minute-hand-group.animate-update {
+      animation: updateMinuteHand 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
     }
 
     .clock-wrapper:hover {

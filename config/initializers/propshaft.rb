@@ -7,7 +7,8 @@ if Rails.env.production?
   
   class TerserCompiler < Propshaft::Compiler
     def compile(logical_path, input)
-      if logical_path.extname == '.js' && !logical_path.to_s.include?('.min')
+      path_str = logical_path.to_s
+      if path_str.end_with?('.js') && !path_str.include?('.min')
         Terser.new(compress: true, mangle: true).compile(input)
       else
         input

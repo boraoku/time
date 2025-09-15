@@ -15,8 +15,7 @@ namespace :assets do
             drop_console: true,
             drop_debugger: true
           },
-          mangle: true,
-          module: true  # Preserve ES6 modules
+          mangle: true
         ).compile(content)
         
         File.write(file.sub('.js', '.min.js'), minified)
