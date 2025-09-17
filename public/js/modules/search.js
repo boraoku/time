@@ -1,8 +1,9 @@
 // Search module
 export const SearchModule = {
-  init(clockRenderer, animationsModule) {
+  init(clockRenderer, animationsModule, verificationModule) {
     this.clockRenderer = clockRenderer;
     this.animationsModule = animationsModule;
+    this.verificationModule = verificationModule;
     
     this.queryInput = document.querySelector('input[name="query"]');
     this.form = document.querySelector('form');
@@ -147,17 +148,22 @@ export const SearchModule = {
   displayResults(results) {
     try {
       let clocksContainer = document.querySelector('.clocks-container');
-      
+
       if (!clocksContainer) {
         // First time or after clearing - create container
         clocksContainer = document.createElement('div');
         clocksContainer.className = 'clocks-container';
         document.querySelector('.container').appendChild(clocksContainer);
-        
+
         this.animationsModule.addInitialClocks(clocksContainer, results, this.clockRenderer);
       } else {
         // Update existing container
         this.animationsModule.updateExistingClocks(clocksContainer, results, this.clockRenderer);
+      }
+
+      // Trigger verification after clocks are displayed
+      if (this.verificationModule) {
+        this.verificationModule.verifyNewClocks(clocksContainer);
       }
     } catch (error) {
       console.error('Error displaying results:', error);

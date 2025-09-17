@@ -31,7 +31,9 @@ export const ClockRenderer = {
           </svg>
         </div>
         
-        <div class="city-name">${result.city}</div>
+        <div class="city-label">
+          <div class="city-name">${result.city}</div>
+        </div>
         <div class="time-digital">${result.time}</div>
         <div class="timezone-info">${result.offset}</div>
       </div>

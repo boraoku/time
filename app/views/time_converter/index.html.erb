@@ -567,9 +567,73 @@
       margin-bottom: 5px;
       text-transform: uppercase;
       letter-spacing: 3px;
-      text-shadow: 
+      text-shadow:
         0 0 10px rgba(136, 255, 0, 0.8),
         0 0 20px rgba(136, 255, 0, 0.5);
+    }
+
+    .city-label {
+      position: relative;
+    }
+
+    .verification-status {
+      font-size: 10px;
+      font-weight: normal;
+      text-transform: none;
+      letter-spacing: 1px;
+      margin-top: 2px;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+
+    .verification-status.pending {
+      color: #ffcc00;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .verification-status.verified {
+      color: #00ff66;
+    }
+
+    .verification-status.corrected {
+      color: #ff6600;
+      text-shadow: 0 0 5px rgba(255, 102, 0, 0.6);
+    }
+
+    .verification-status.error {
+      color: #ff3333;
+    }
+
+    .status-pending,
+    .status-verified,
+    .status-corrected,
+    .status-error {
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .time-digital.time-corrected {
+      animation: flashCorrection 0.5s ease-out;
+    }
+
+    @keyframes flashCorrection {
+      0% {
+        color: #ff6600;
+        transform: scale(1.1);
+      }
+      100% {
+        color: #88ff00;
+        transform: scale(1);
+      }
     }
 
     .time-digital {
@@ -868,13 +932,20 @@
     import { ClockRenderer } from '/js/modules/clock_renderer.js';
     import { AnimationsModule } from '/js/modules/animations.js';
     import { SearchModule } from '/js/modules/search.js';
+    import { VerificationModule } from '/js/modules/verification.js';
 
     // ES6 modules are deferred by default, so DOM is already ready
     // Initialize quotes rotation
     QuotesModule.init();
-    
+
+    // Initialize verification module
+    VerificationModule.init();
+
+    // Make AnimationsModule available globally for verification module
+    window.AnimationsModule = AnimationsModule;
+
     // Initialize search with dependencies
-    SearchModule.init(ClockRenderer, AnimationsModule);
+    SearchModule.init(ClockRenderer, AnimationsModule, VerificationModule);
   </script>
 </body>
 </html>
