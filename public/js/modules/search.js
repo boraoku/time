@@ -161,9 +161,19 @@ export const SearchModule = {
         this.animationsModule.updateExistingClocks(clocksContainer, results, this.clockRenderer);
       }
 
-      // Trigger verification after clocks are displayed
+      // Extract source info from first result (usually the source city)
+      let sourceInfo = null;
+      if (results && results.length > 0) {
+        const firstResult = results[0];
+        sourceInfo = {
+          city: firstResult.city,
+          time: firstResult.time
+        };
+      }
+
+      // Trigger verification after clocks are displayed with source info
       if (this.verificationModule) {
-        this.verificationModule.verifyNewClocks(clocksContainer);
+        this.verificationModule.verifyNewClocks(clocksContainer, sourceInfo);
       }
     } catch (error) {
       console.error('Error displaying results:', error);

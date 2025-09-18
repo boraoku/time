@@ -1,5 +1,5 @@
 class TimeConverterController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: [:verify]
+  skip_before_action :verify_authenticity_token, only: [:verify, :verify_single]
 
   def index
     @query = params[:query]
@@ -66,6 +66,47 @@ class TimeConverterController < ApplicationController
       Rails.logger.error "VERIFICATION CONTROLLER ERROR: #{e.class.name}: #{e.message}"
       Rails.logger.error "Backtrace: #{e.backtrace.first(3).join("\n  ")}"
       render json: { error: 'Verification service error', message: e.message }, status: :internal_server_error
+    end
+  end
+
+  def verify_single
+    city = params[:city]
+    time = params[:time]
+    source_info = params[:source]
+    attempt_number = params[:attempt] || 1
+
+    Rails.logger.info "▶ SINGLE CITY VERIFICATION: #{city} (frontend attempt #{attempt_number})"
+
+    return render json: { error: 'No city provided' }, status: :bad_request if city.blank?
+
+    begin
+      result = if source_info
+        # Verify as conversion from source
+        Rails.logger.info "  Source: #{source_info['city']} at #{source_info['time']}"
+        results = TimeVerificationService.verify_time_conversions(
+          source_info,
+          [{ 'city' => city, 'time' => time }]
+        )
+        results.first
+      else
+        # Verify current time
+        Rails.logger.info "  No source - verifying current time"
+        results = TimeVerificationService.verify_multiple_cities(
+          [{ 'city' => city, 'time' => time }]
+        )
+        results.first
+      end
+
+      Rails.logger.info "  Result: #{result[:status]} (#{result[:connection_attempts] || 1} API attempts)"
+      render json: result
+    rescue StandardError => e
+      Rails.logger.error "SINGLE CITY VERIFICATION ERROR: #{e.message}"
+      Rails.logger.error "Backtrace: #{e.backtrace.first(3).join("\n  ")}"
+      render json: {
+        status: 'error',
+        city: city,
+        message: e.message
+      }, status: :internal_server_error
     end
   end
 end

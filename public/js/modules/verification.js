@@ -18,8 +18,11 @@ export const VerificationModule = {
         // Convert back to Map and filter out expired entries
         const now = Date.now();
         Object.entries(data).forEach(([key, value]) => {
-          if (value.timestamp && (now - value.timestamp) < this.CACHE_DURATION_MS) {
-            this.verificationCache.set(key, value);
+          if (value.timestamp) {
+            const cacheDuration = value.cacheDuration || this.CACHE_DURATION_MS;
+            if ((now - value.timestamp) < cacheDuration) {
+              this.verificationCache.set(key, value);
+            }
           }
         });
       }
@@ -41,13 +44,14 @@ export const VerificationModule = {
   },
 
   setupCleanupInterval() {
-    // Clean up expired cache entries every hour
+    // Clean up expired cache entries every minute for short-lived error caches
     setInterval(() => {
       const now = Date.now();
       let hasChanges = false;
 
       this.verificationCache.forEach((value, key) => {
-        if ((now - value.timestamp) >= this.CACHE_DURATION_MS) {
+        const cacheDuration = value.cacheDuration || this.CACHE_DURATION_MS;
+        if ((now - value.timestamp) >= cacheDuration) {
           this.verificationCache.delete(key);
           hasChanges = true;
         }
@@ -56,7 +60,7 @@ export const VerificationModule = {
       if (hasChanges) {
         this.saveCache();
       }
-    }, 60 * 60 * 1000); // Every hour
+    }, 60 * 1000); // Every minute (more frequent to clean up short-lived error caches)
   },
 
   getCacheKey(city) {
@@ -67,32 +71,36 @@ export const VerificationModule = {
     const key = this.getCacheKey(city);
     const cached = this.verificationCache.get(key);
 
-    if (cached && (Date.now() - cached.timestamp) < this.CACHE_DURATION_MS) {
-      return cached;
+    if (cached) {
+      const cacheDuration = cached.cacheDuration || this.CACHE_DURATION_MS;
+      if ((Date.now() - cached.timestamp) < cacheDuration) {
+        return cached;
+      }
     }
 
     return null;
   },
 
-  setCachedVerification(city, verificationData) {
+  setCachedVerification(city, verificationData, customDuration = null) {
     const key = this.getCacheKey(city);
     this.verificationCache.set(key, {
       ...verificationData,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      cacheDuration: customDuration || this.CACHE_DURATION_MS
     });
     this.saveCache();
   },
 
   async verifyClocks(clockElements, sourceInfo = null) {
-    const citiesToVerify = [];
-    const clocksToUpdate = [];
+    // Smart ordering: source first, then west to east
+    const orderedClocks = this.orderClocksSmartly(clockElements, sourceInfo);
 
-    // Collect cities that need verification
-    clockElements.forEach(clockEl => {
+    // Process each city sequentially
+    for (const clockEl of orderedClocks) {
       const city = clockEl.dataset.city;
       const timeText = clockEl.querySelector('.time-digital')?.textContent;
 
-      if (!city || !timeText) return;
+      if (!city || !timeText) continue;
 
       // Create cache key with source info if available
       const cacheKey = sourceInfo ? `${city}_from_${sourceInfo.city}_${sourceInfo.time}` : city;
@@ -105,67 +113,112 @@ export const VerificationModule = {
         if (cached.correction_needed) {
           this.applyTimeCorrection(clockEl, cached);
         }
-      } else if (!this.pendingVerifications.has(cacheKey)) {
-        // Add to verification queue
-        citiesToVerify.push({ city, time: timeText });
-        clocksToUpdate.push(clockEl);
-        this.pendingVerifications.add(cacheKey);
-
-        // Show pending status
-        this.updateClockVerificationStatus(clockEl, { status: 'pending' });
+        continue;
       }
-    });
 
-    if (citiesToVerify.length === 0) return;
+      // Skip if already being verified
+      if (this.pendingVerifications.has(cacheKey)) {
+        continue;
+      }
 
-    // Perform verification
+      // Mark as pending
+      this.pendingVerifications.add(cacheKey);
+
+      // Show "Pending..." initially
+      this.updateClockVerificationStatus(clockEl, { status: 'pending' });
+
+      // Verify this single city with live retry updates
+      await this.verifySingleCityWithRetries(clockEl, sourceInfo);
+
+      // Remove from pending
+      this.pendingVerifications.delete(cacheKey);
+
+      // Small delay between cities for visual clarity (200ms)
+      await this.delay(200);
+    }
+  },
+
+  async verifySingleCityWithRetries(clockEl, sourceInfo) {
+    const city = clockEl.dataset.city;
+    const timeText = clockEl.querySelector('.time-digital')?.textContent;
+
     try {
-      const verificationData = {
-        cities: citiesToVerify
-      };
+      // Show "Verifying..." status
+      this.updateClockVerificationStatus(clockEl, {
+        status: 'verifying'
+      });
 
-      // Add source information if available
-      if (sourceInfo) {
-        verificationData.source = sourceInfo;
+      // Make single city verification request
+      const result = await this.performSingleCityVerification({
+        city: city,
+        time: timeText,
+        source: sourceInfo
+      });
+
+      // Update UI with result
+      this.updateClockVerificationStatus(clockEl, result);
+
+      // Apply correction if needed
+      if (result.correction_needed) {
+        this.applyTimeCorrection(clockEl, result);
       }
 
-      const response = await this.performVerification(verificationData);
-
-      if (response.verifications) {
-        response.verifications.forEach((verification, index) => {
-          const clockEl = clocksToUpdate[index];
-          if (!clockEl) return;
-
-          // Create cache key with source info if available
-          const cacheKey = sourceInfo ?
-            `${verification.city}_from_${sourceInfo.city}_${sourceInfo.time}` :
-            verification.city;
-
-          // Cache the result
-          this.setCachedVerification(cacheKey, verification);
-
-          // Update UI
-          this.updateClockVerificationStatus(clockEl, verification);
-
-          // Apply correction if needed
-          if (verification.correction_needed) {
-            this.applyTimeCorrection(clockEl, verification);
-          }
-
-          // Remove from pending
-          this.pendingVerifications.delete(cacheKey);
-        });
+      // Cache successful result only
+      if (result.status !== 'error') {
+        const cacheKey = sourceInfo ?
+          `${city}_from_${sourceInfo.city}_${sourceInfo.time}` :
+          city;
+        this.setCachedVerification(cacheKey, result);
       }
+
     } catch (error) {
-      console.error('Verification failed:', error);
-
-      // Update all pending clocks with error status
-      clocksToUpdate.forEach(clockEl => {
-        const city = clockEl.dataset.city;
-        this.updateClockVerificationStatus(clockEl, { status: 'error' });
-        this.pendingVerifications.delete(city);
+      console.log(`Verification failed for ${city}:`, error);
+      // Show error status
+      this.updateClockVerificationStatus(clockEl, {
+        status: 'error',
+        message: 'Unable to verify'
       });
     }
+  },
+
+  orderClocksSmartly(clockElements, sourceInfo) {
+    const clocks = Array.from(clockElements);
+
+    // Extract timezone offset from each clock
+    const clocksWithOffset = clocks.map(clock => ({
+      element: clock,
+      city: clock.dataset.city,
+      offset: this.extractOffset(clock),
+      isSource: sourceInfo &&
+               clock.dataset.city &&
+               clock.dataset.city.toLowerCase() === sourceInfo.city.toLowerCase()
+    }));
+
+    // Sort: source first, then by offset (west to east)
+    return clocksWithOffset
+      .sort((a, b) => {
+        if (a.isSource) return -1;  // Source always first
+        if (b.isSource) return 1;
+        return a.offset - b.offset; // West (negative) to East (positive)
+      })
+      .map(item => item.element);
+  },
+
+  extractOffset(clockEl) {
+    // Get from timezone-info element like "UTC-08:00" or "UTC+09:00"
+    const offsetText = clockEl.querySelector('.timezone-info')?.textContent || '';
+    const match = offsetText.match(/UTC([+-])(\d{2}):(\d{2})/);
+    if (match) {
+      const sign = match[1] === '+' ? 1 : -1;
+      const hours = parseInt(match[2]);
+      const minutes = parseInt(match[3]);
+      return sign * (hours + minutes/60);
+    }
+    return 0;
+  },
+
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   },
 
   async performVerification(verificationData) {
@@ -183,6 +236,26 @@ export const VerificationModule = {
 
     if (!response.ok) {
       throw new Error(`Verification failed: ${response.statusText}`);
+    }
+
+    return await response.json();
+  },
+
+  async performSingleCityVerification(data) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    const response = await fetch('/time_converter/verify_single', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Single city verification failed: ${response.statusText}`);
     }
 
     return await response.json();
@@ -206,7 +279,12 @@ export const VerificationModule = {
     // Update status based on verification result
     switch (verification.status) {
       case 'pending':
-        statusEl.innerHTML = '<span class="status-pending">⏳ Checking...</span>';
+        statusEl.innerHTML = '<span class="status-pending">⏳ Pending...</span>';
+        statusEl.className = 'verification-status pending';
+        break;
+
+      case 'verifying':
+        statusEl.innerHTML = '<span class="status-pending">⏳ Verifying...</span>';
         statusEl.className = 'verification-status pending';
         break;
 
@@ -284,6 +362,19 @@ export const VerificationModule = {
   verifyNewClocks(container, queryInfo = null) {
     const clockElements = container.querySelectorAll('.clock-wrapper:not(.slide-out)');
 
+    // Set city data attributes and show initial pending status
+    clockElements.forEach(clockEl => {
+      if (!clockEl.dataset.city) {
+        const cityName = clockEl.querySelector('.city-name')?.textContent;
+        if (cityName) {
+          clockEl.dataset.city = cityName.trim();
+        }
+      }
+
+      // Show "Pending" status immediately for all clocks
+      this.updateClockVerificationStatus(clockEl, { status: 'pending' });
+    });
+
     // Extract source information if available
     let sourceInfo = null;
     if (queryInfo) {
@@ -292,7 +383,7 @@ export const VerificationModule = {
       // Try to determine source from the first clock (which is usually the source city)
       const firstClock = clockElements[0];
       if (firstClock) {
-        const sourceCity = firstClock.dataset.city;
+        const sourceCity = firstClock.dataset.city || firstClock.querySelector('.city-name')?.textContent?.trim();
         const sourceTime = firstClock.querySelector('.time-digital')?.textContent;
         if (sourceCity && sourceTime) {
           sourceInfo = { city: sourceCity, time: sourceTime };

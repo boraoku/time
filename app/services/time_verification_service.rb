@@ -327,7 +327,7 @@ class TimeVerificationService
 
     begin
       # Fetch current time for source timezone to get DST info
-      Rails.logger.info "Fetching WorldTimeAPI data for source: #{source_tz}..."
+      Rails.logger.info "Fetching source timezone data: #{source_tz}"
       source_api_data = fetch_worldtime(source_tz)
 
       # Add delay after source fetch to avoid rate limiting
@@ -408,7 +408,6 @@ class TimeVerificationService
 
         if target_tz
           # Fetch target timezone data
-          Rails.logger.info "Fetching WorldTimeAPI data for: #{target_tz}..."
           target_api_data = fetch_worldtime(target_tz)
 
           if target_api_data
@@ -444,7 +443,8 @@ class TimeVerificationService
               utc_offset: target_api_data['utc_offset'],
               is_dst: target_api_data['dst'],
               source_city: source_city,
-              source_time: source_time_str
+              source_time: source_time_str,
+              connection_attempts: target_api_data['connection_attempts'] || 1  # Include retry attempts info
             }
 
             if diff_minutes <= VERIFICATION_THRESHOLD_MINUTES
@@ -561,12 +561,26 @@ class TimeVerificationService
       # Try connection with retries for intermittent failures
       max_method_retries = 3
       last_error = nil
+      attempts_made = 0
 
       (0...max_method_retries).each do |attempt|
         begin
+          attempts_made = attempt + 1
+          Rails.logger.info "Fetching WorldTimeAPI data for: #{timezone}... (attempt #{attempts_made}/#{max_method_retries})"
+
+          # Broadcast retry attempt to frontend via ActionCable if available
+          if defined?(ActionCable) && timezone
+            ActionCable.server.broadcast('verification_status', {
+              timezone: timezone,
+              status: 'retrying',
+              attempt: attempts_made,
+              max_attempts: max_method_retries
+            })
+          end
+
           if attempt > 0
-            Rails.logger.debug "Retry attempt #{attempt + 1}/#{max_method_retries} after delay..."
-            sleep(0.5 * attempt)  # Exponential backoff
+            Rails.logger.debug "Waiting 3 seconds before retry..."
+            sleep(3)  # 3 second delay between retry attempts
           end
 
           # Try with disabled Happy Eyeballs (works most of the time)
@@ -574,7 +588,7 @@ class TimeVerificationService
           break if response && response.code == '200'
         rescue Errno::ECONNRESET, OpenSSL::SSL::SSLError => e
           last_error = e
-          Rails.logger.debug "Connection attempt #{attempt + 1} failed: #{e.class.name}: #{e.message}"
+          Rails.logger.warn "✗ Connection attempt #{attempts_made}/#{max_method_retries} failed: #{e.class.name}: #{e.message}"
 
           # On last attempt, try alternative methods
           if attempt == max_method_retries - 1
@@ -617,6 +631,8 @@ class TimeVerificationService
           Rails.logger.warn "⚠️ API Rate Limit Warning: Only #{rate_remaining} requests remaining!"
         end
 
+        # Add attempts info to the data
+        data['connection_attempts'] = attempts_made if defined?(attempts_made) && attempts_made
         data
       else
         Rails.logger.error "✗ API Error #{response.code} for #{timezone}: #{response.body}"
