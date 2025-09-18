@@ -1,9 +1,11 @@
 require 'net/http'
+require 'net/https'
 require 'json'
 require 'uri'
+require 'open-uri'
 
 class TimeVerificationService
-  WORLDTIME_API_BASE = 'http://worldtimeapi.org/api/timezone'
+  WORLDTIME_API_BASE = 'https://worldtimeapi.org/api/timezone'
   VERIFICATION_THRESHOLD_MINUTES = 2
   API_DELAY_SECONDS = 1.0  # 1 second between API calls to be safe
   MAX_REQUESTS_PER_MINUTE = 30  # WorldTimeAPI rate limit
@@ -554,15 +556,48 @@ class TimeVerificationService
 
     begin
       start_time = Time.now
-      response = Net::HTTP.start(uri.host, uri.port,
-        use_ssl: false,  # WorldTimeAPI uses HTTP
-        open_timeout: 5,
-        read_timeout: 5) do |http|
-        request = Net::HTTP::Get.new(uri)
-        request['Accept'] = 'application/json'
-        request['User-Agent'] = 'TimeConverter/1.0'
-        http.request(request)
+      response = nil
+
+      # Try connection with retries for intermittent failures
+      max_method_retries = 3
+      last_error = nil
+
+      (0...max_method_retries).each do |attempt|
+        begin
+          if attempt > 0
+            Rails.logger.debug "Retry attempt #{attempt + 1}/#{max_method_retries} after delay..."
+            sleep(0.5 * attempt)  # Exponential backoff
+          end
+
+          # Try with disabled Happy Eyeballs (works most of the time)
+          response = method_with_disabled_happy_eyeballs(uri)
+          break if response && response.code == '200'
+        rescue Errno::ECONNRESET, OpenSSL::SSL::SSLError => e
+          last_error = e
+          Rails.logger.debug "Connection attempt #{attempt + 1} failed: #{e.class.name}: #{e.message}"
+
+          # On last attempt, try alternative methods
+          if attempt == max_method_retries - 1
+            begin
+              Rails.logger.debug "Trying alternative connection method..."
+              response = method_with_ipv4_only(uri)
+              break if response && response.code == '200'
+            rescue => alt_error
+              Rails.logger.debug "Alternative method also failed: #{alt_error.class.name}"
+              # Try open-uri as last resort
+              begin
+                response = method_with_open_uri(uri)
+                break if response && response.code == '200'
+              rescue => final_error
+                Rails.logger.debug "All methods failed: #{final_error.class.name}"
+              end
+            end
+          end
+        end
       end
+
+      # If all attempts failed, raise the last error
+      raise last_error || Errno::ECONNRESET.new("All connection attempts failed") unless response
       elapsed = ((Time.now - start_time) * 1000).round(2)
 
       if response.code == '200'
@@ -618,14 +653,98 @@ class TimeVerificationService
       Rails.logger.error "  Error: #{e.class.name}: #{e.message}"
       Rails.logger.error "  Backtrace: #{e.backtrace.first(3).join("\n  ")}"
 
-      # Retry on network errors
-      if retry_count < max_retries && (e.is_a?(Errno::ECONNREFUSED) || e.is_a?(SocketError))
-        Rails.logger.warn "Retrying after network error..."
-        sleep(0.5 * (retry_count + 1))
+      # Retry on network errors including ECONNRESET
+      if retry_count < max_retries && (e.is_a?(Errno::ECONNRESET) || e.is_a?(Errno::ECONNREFUSED) || e.is_a?(SocketError))
+        Rails.logger.warn "Retrying after network error (attempt #{retry_count + 2}/#{max_retries + 1})..."
+        sleep(1.0 * (retry_count + 1))  # Longer delay for retries
         return fetch_worldtime(timezone, retry_count + 1)
       end
       nil
     end
+  end
+
+  # Connection method 1: Disable Happy Eyeballs (fast_fallback)
+  def self.method_with_disabled_happy_eyeballs(uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.open_timeout = 5
+    http.read_timeout = 5
+
+    # Disable Happy Eyeballs for reliability over performance
+    # This is an async check where reliability matters more than speed
+    if http.respond_to?(:fast_fallback=)
+      http.fast_fallback = false
+    end
+
+    http.start do |conn|
+      request = Net::HTTP::Get.new(uri)
+      request['Accept'] = 'application/json'
+      request['User-Agent'] = 'TimeConverter/1.0'
+      conn.request(request)
+    end
+  end
+
+  # Connection method 2: Force IPv4 only connection
+  def self.method_with_ipv4_only(uri)
+    require 'resolv'
+
+    # Try to get IPv4 address only
+    begin
+      ipv4_address = Resolv::DNS.open do |dns|
+        resources = dns.getresources(uri.host, Resolv::DNS::Resource::IN::A)
+        raise "No IPv4 address found" if resources.empty?
+        resources.first.address.to_s
+      end
+
+      Rails.logger.debug "Resolved #{uri.host} to IPv4: #{ipv4_address}"
+
+      http = Net::HTTP.new(ipv4_address, uri.port)
+      http.use_ssl = true
+      http.open_timeout = 5
+      http.read_timeout = 5
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
+      # Set hostname for SNI (Server Name Indication)
+      http.hostname = uri.host if http.respond_to?(:hostname=)
+
+      http.start do |conn|
+        request = Net::HTTP::Get.new(uri.request_uri)
+        request['Host'] = uri.host  # Important for virtual hosting
+        request['Accept'] = 'application/json'
+        request['User-Agent'] = 'TimeConverter/1.0'
+        conn.request(request)
+      end
+    rescue => e
+      Rails.logger.debug "IPv4 resolution failed: #{e.message}, falling back to hostname"
+      # If IPv4 resolution fails, just use the hostname
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.open_timeout = 5
+      http.read_timeout = 5
+
+      http.start do |conn|
+        request = Net::HTTP::Get.new(uri)
+        request['Accept'] = 'application/json'
+        request['User-Agent'] = 'TimeConverter/1.0'
+        conn.request(request)
+      end
+    end
+  end
+
+  # Connection method 3: Use open-uri as fallback
+  def self.method_with_open_uri(uri)
+    options = {
+      'Accept' => 'application/json',
+      'User-Agent' => 'TimeConverter/1.0',
+      open_timeout: 5,
+      read_timeout: 5
+    }
+
+    response_body = URI.open(uri.to_s, options).read
+
+    # Create a mock response object to match Net::HTTP::Response interface
+    mock_response = Struct.new(:code, :body).new('200', response_body)
+    mock_response
   end
 
   def self.parse_time_string(time_str)
