@@ -1,14 +1,14 @@
 // Doc Brown quotes module
 export const QuotesModule = {
   quotes: [
-    "Not an hour sooner, not an hour later.",
-    "Gonna build a time machine? Do it with some style!",
-    "If my calculations are correct...",
+    "Not an hour sooner,\nnot an hour later.",
+    "Gonna build\na time machine?\nDo it with some style!",
+    "If my calculations\nare correct...",
     "Great Scott!",
-    "Roads? Where we're going, we don't need roads.",
-    "That's what Doc says!",
-    "Your future is whatever you make it.",
-    "Time circuits on. Flux capacitor... fluxing."
+    "Roads?\nWhere we're going,\nwe don't need roads.",
+    "That's what\nDoc says!",
+    "Your future is\nwhatever you make it.",
+    "Time circuits on.\nFlux capacitor...\nFluxing."
   ],
 
   currentQuoteIndex: 0,
@@ -21,8 +21,8 @@ export const QuotesModule = {
     // Start from a random index
     this.currentQuoteIndex = Math.floor(Math.random() * this.quotes.length);
     
-    // Set initial random quote immediately
-    this.subtitle.textContent = this.quotes[this.currentQuoteIndex];
+    // Set initial random quote immediately, converting \n to <br>
+    this.subtitle.innerHTML = this.quotes[this.currentQuoteIndex].replace(/\n/g, '<br>');
     
     // Add transition for smooth fade
     this.subtitle.style.transition = 'opacity 0.3s ease';
@@ -37,7 +37,7 @@ export const QuotesModule = {
       this.subtitle.style.opacity = '0';
       
       setTimeout(() => {
-        this.subtitle.textContent = this.quotes[this.currentQuoteIndex];
+        this.subtitle.innerHTML = this.quotes[this.currentQuoteIndex].replace(/\n/g, '<br>');
         this.subtitle.style.opacity = '0.8';
       }, 300);
     }, 3000);
