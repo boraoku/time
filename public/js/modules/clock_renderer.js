@@ -48,7 +48,7 @@ export const ClockRenderer = {
       const x2 = 75 + 65 * Math.sin(angle * Math.PI / 180);
       const y2 = 75 - 65 * Math.cos(angle * Math.PI / 180);
       return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" 
-            stroke="${isPm ? '#66ff00' : '#00ff66'}" 
+            stroke="${isPm ? '#00ff66' : '#66ff00'}" 
             stroke-width="${i % 3 === 0 ? '3' : '1'}"
             opacity="${i % 3 === 0 ? '1' : '0.5'}"
             filter="url(#glow)" />`;
@@ -72,11 +72,11 @@ export const ClockRenderer = {
          data-angle="${hourAngle}"
          data-initial="${startFrom12}">
         <line class="hour-hand-line" x1="75" y1="75" x2="75" y2="40"
-              stroke="${isPm ? '#66ff00' : '#00ff66'}" 
+              stroke="${isPm ? '#00ff66' : '#66ff00'}" 
               stroke-width="8"
               stroke-linecap="round" />
         <line class="hour-hand-line-inner" x1="75" y1="75" x2="75" y2="40"
-              stroke="${isPm ? '#004400' : '#003333'}" 
+              stroke="${isPm ? '#003333' : '#004400'}" 
               stroke-width="5"
               stroke-linecap="round" />
       </g>
@@ -88,11 +88,11 @@ export const ClockRenderer = {
          data-angle="${minuteAngle}"
          data-initial="${startFrom12}">
         <line class="minute-hand-line" x1="75" y1="75" x2="75" y2="25"
-              stroke="${isPm ? '#66ff00' : '#00ff66'}" 
+              stroke="${isPm ? '#00ff66' : '#66ff00'}" 
               stroke-width="8"
               stroke-linecap="round" />
         <line class="minute-hand-line-inner" x1="75" y1="75" x2="75" y2="25"
-              stroke="${isPm ? '#004400' : '#003333'}" 
+              stroke="${isPm ? '#003333' : '#004400'}" 
               stroke-width="5"
               stroke-linecap="round" />
       </g>
@@ -100,7 +100,7 @@ export const ClockRenderer = {
   },
 
   renderClockNumbers(isPm) {
-    const color = isPm ? '#66ff00' : '#00ff66';
+    const color = isPm ? '#00ff66' : '#66ff00';
     return `
       <text x="75" y="20" text-anchor="middle" 
             fill="${color}" 

@@ -221,8 +221,8 @@ export const AnimationsModule = {
       // Update colors
       const hourLine = hourHandGroup.querySelector('.hour-hand-line');
       const hourInner = hourHandGroup.querySelector('.hour-hand-line-inner');
-      if (hourLine) hourLine.setAttribute('stroke', isPm ? '#66ff00' : '#00ff66');
-      if (hourInner) hourInner.setAttribute('stroke', isPm ? '#004400' : '#003333');
+      if (hourLine) hourLine.setAttribute('stroke', isPm ? '#00ff66' : '#66ff00');
+      if (hourInner) hourInner.setAttribute('stroke', isPm ? '#003333' : '#004400');
       
       // Update transform after animation completes
       setTimeout(() => {
@@ -247,8 +247,8 @@ export const AnimationsModule = {
       // Update colors
       const minuteLine = minuteHandGroup.querySelector('.minute-hand-line');
       const minuteInner = minuteHandGroup.querySelector('.minute-hand-line-inner');
-      if (minuteLine) minuteLine.setAttribute('stroke', isPm ? '#66ff00' : '#00ff66');
-      if (minuteInner) minuteInner.setAttribute('stroke', isPm ? '#004400' : '#003333');
+      if (minuteLine) minuteLine.setAttribute('stroke', isPm ? '#00ff66' : '#66ff00');
+      if (minuteInner) minuteInner.setAttribute('stroke', isPm ? '#003333' : '#004400');
 
       // Update transform after animation completes
       setTimeout(() => {
@@ -272,14 +272,14 @@ export const AnimationsModule = {
           !marker.classList.contains('hour-hand-line-inner') &&
           !marker.classList.contains('minute-hand-line') &&
           !marker.classList.contains('minute-hand-line-inner')) {
-        marker.setAttribute('stroke', isPm ? '#66ff00' : '#00ff66');
+        marker.setAttribute('stroke', isPm ? '#00ff66' : '#66ff00');
       }
     });
     
     // Update clock numbers colors
     const numbers = clockElement.querySelectorAll('text');
     numbers.forEach(num => {
-      num.setAttribute('fill', isPm ? '#66ff00' : '#00ff66');
+      num.setAttribute('fill', isPm ? '#00ff66' : '#66ff00');
     });
     
     // Update digital time display

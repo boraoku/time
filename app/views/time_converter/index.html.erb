@@ -445,7 +445,7 @@
     }
 
     .clock-face.am {
-      background: radial-gradient(circle at center, #00ff66 0%, #006633 50%, #001100 100%);
+      background: radial-gradient(circle at center, #00ff66 0%, #336600 50%, #0a1a00 100%);
       border: 3px solid #00ff66;
       box-shadow: 
         0 0 40px rgba(0, 255, 100, 0.8),
@@ -454,7 +454,7 @@
     }
 
     .clock-face.pm {
-      background: radial-gradient(circle at center, #00ff66 0%, #336600 50%, #0a1a00 100%);
+      background: radial-gradient(circle at center, #00ff66 0%, #006633 50%, #001100 100%);
       border: 3px solid #00ff66;
       box-shadow: 
         0 0 40px rgba(0, 255, 100, 0.8),
@@ -866,7 +866,7 @@
                   <% x2 = 75 + 65 * Math.sin(angle * Math::PI / 180) %>
                   <% y2 = 75 - 65 * Math.cos(angle * Math::PI / 180) %>
                   <line x1="<%= x1 %>" y1="<%= y1 %>" x2="<%= x2 %>" y2="<%= y2 %>" 
-                        stroke="<%= result[:is_pm] ? '#66ff00' : '#00ff66' %>" 
+                        stroke="<%= result[:is_pm] ? '#00ff66' : '#66ff00' %>" 
                         stroke-width="<%= i % 3 == 0 ? '3' : '1' %>"
                         opacity="<%= i % 3 == 0 ? '1' : '0.5' %>"
                         filter="url(#glow)" />
@@ -879,13 +879,13 @@
                 <line x1="75" y1="75" 
                       x2="<%= 75 + 35 * Math.cos(hour_angle * Math::PI / 180) %>" 
                       y2="<%= 75 + 35 * Math.sin(hour_angle * Math::PI / 180) %>"
-                      stroke="<%= result[:is_pm] ? '#66ff00' : '#00ff66' %>" 
+                      stroke="<%= result[:is_pm] ? '#00ff66' : '#66ff00' %>" 
                       stroke-width="8"
                       stroke-linecap="round" />
                 <line x1="75" y1="75" 
                       x2="<%= 75 + 35 * Math.cos(hour_angle * Math::PI / 180) %>" 
                       y2="<%= 75 + 35 * Math.sin(hour_angle * Math::PI / 180) %>"
-                      stroke="<%= result[:is_pm] ? '#004400' : '#003333' %>" 
+                      stroke="<%= result[:is_pm] ? '#003333' : '#004400' %>" 
                       stroke-width="5"
                       stroke-linecap="round" />
                 
@@ -893,29 +893,29 @@
                 <line x1="75" y1="75" 
                       x2="<%= 75 + 50 * Math.cos(minute_angle * Math::PI / 180) %>" 
                       y2="<%= 75 + 50 * Math.sin(minute_angle * Math::PI / 180) %>"
-                      stroke="<%= result[:is_pm] ? '#66ff00' : '#00ff66' %>" 
+                      stroke="<%= result[:is_pm] ? '#00ff66' : '#66ff00' %>" 
                       stroke-width="8"
                       stroke-linecap="round" />
                 <line x1="75" y1="75" 
                       x2="<%= 75 + 50 * Math.cos(minute_angle * Math::PI / 180) %>" 
                       y2="<%= 75 + 50 * Math.sin(minute_angle * Math::PI / 180) %>"
-                      stroke="<%= result[:is_pm] ? '#004400' : '#003333' %>" 
+                      stroke="<%= result[:is_pm] ? '#003333' : '#004400' %>" 
                       stroke-width="5"
                       stroke-linecap="round" />
                 
                 <circle cx="75" cy="75" r="5" fill="#88ff00" filter="url(#glow)" />
                 
                 <text x="75" y="20" text-anchor="middle" 
-                      fill="<%= result[:is_pm] ? '#66ff00' : '#00ff66' %>" 
+                      fill="<%= result[:is_pm] ? '#00ff66' : '#66ff00' %>" 
                       font-size="12" font-weight="bold" font-family="Orbitron">XII</text>
                 <text x="130" y="78" text-anchor="middle" 
-                      fill="<%= result[:is_pm] ? '#66ff00' : '#00ff66' %>" 
+                      fill="<%= result[:is_pm] ? '#00ff66' : '#66ff00' %>" 
                       font-size="12" font-weight="bold" font-family="Orbitron">III</text>
                 <text x="75" y="135" text-anchor="middle" 
-                      fill="<%= result[:is_pm] ? '#66ff00' : '#00ff66' %>" 
+                      fill="<%= result[:is_pm] ? '#00ff66' : '#66ff00' %>" 
                       font-size="12" font-weight="bold" font-family="Orbitron">VI</text>
                 <text x="20" y="78" text-anchor="middle" 
-                      fill="<%= result[:is_pm] ? '#66ff00' : '#00ff66' %>" 
+                      fill="<%= result[:is_pm] ? '#00ff66' : '#66ff00' %>" 
                       font-size="12" font-weight="bold" font-family="Orbitron">IX</text>
               </svg>
             </div>
