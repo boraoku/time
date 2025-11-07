@@ -4,10 +4,11 @@ import { TimeParser } from '../TimeParser.js';
 export const SearchModule = {
   parser: null,
 
-  init(clockRenderer, animationsModule, verificationModule) {
+  init(clockRenderer, animationsModule, verificationModule, bannerModule) {
     this.clockRenderer = clockRenderer;
     this.animationsModule = animationsModule;
     this.verificationModule = verificationModule;
+    this.bannerModule = bannerModule;
     this.parser = new TimeParser();
 
     this.queryInput = document.getElementById('query-input');
@@ -184,6 +185,11 @@ export const SearchModule = {
       // Trigger verification after clocks are displayed
       if (this.verificationModule) {
         this.verificationModule.verifyNewClocks(clocksContainer, sourceInfo);
+      }
+
+      // Show banner after clocks are displayed (with 1s delay built into BannerModule)
+      if (this.bannerModule) {
+        this.bannerModule.showBanner();
       }
     } catch (error) {
       console.error('Error displaying results:', error);

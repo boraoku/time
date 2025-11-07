@@ -4,6 +4,7 @@ import { ClockRenderer } from './modules/clock_renderer.js';
 import { AnimationsModule } from './modules/animations.js';
 import { SearchModule } from './modules/SearchModule.js';
 import { VerificationModule } from './modules/VerificationModule.js';
+import BannerModule from './modules/BannerModule.js';
 
 // Initialize application when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,11 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
   VerificationModule.init();
   console.log('✓ Verification module initialized');
 
+  // Initialize banner module
+  BannerModule.init();
+  console.log('✓ Banner module initialized');
+
   // Make AnimationsModule available globally for verification module
   window.AnimationsModule = AnimationsModule;
 
   // Initialize search with dependencies
-  SearchModule.init(ClockRenderer, AnimationsModule, VerificationModule);
+  SearchModule.init(ClockRenderer, AnimationsModule, VerificationModule, BannerModule);
   console.log('✓ Search module initialized');
 
   // Check URL for initial query
