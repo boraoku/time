@@ -1,8 +1,17 @@
-# 🕐 TiME - Pure Client-Side Edition
+# 🕐 TiME 🌍
 
-**Zero dependencies. Zero build tools. Just pure JavaScript.**
+TiME is a radical retro-styled time zone converter that transforms boring time calculations into a visual synthwave experience. Convert times across multiple cities with analog clocks that adapt their glow based on AM/PM - all wrapped in that sweet 80s aesthetic.
 
-This is a 100% client-side version of the TiME time zone converter. No Node.js, no npm, no bundlers - just upload and go!
+<div align="center">
+  <img src="app_v1.gif" alt="Time Sync App Demo" width="100%" style="border-radius: 10px; box-shadow: 0 0 30px rgba(0, 255, 100, 0.5);">
+</div>
+
+## 0 dependencies, 0 build tools, Pure JS!**
+
+This is an almost[^1] pure client-side JS code. No Node.js, no npm, no bundlers - just upload and go! 
+
+[^1]: There's a single PHP file (optional) for verifying hardcoded time zones from WorldTimeAPI.org to adjust for daylight saving time.
+
 
 ## ✨ Features
 
@@ -18,8 +27,9 @@ This is a 100% client-side version of the TiME time zone converter. No Node.js, 
 ## 📁 Project Structure
 
 ```
-time-ts/
+time-js/
 ├── index.html                    # Main HTML with inline CSS
+├── manifest.json                 # PWA manifest
 ├── js/
 │   ├── main.js                   # Entry point, module initialization
 │   ├── TimeParser.js             # Natural language parsing logic
@@ -32,7 +42,15 @@ time-ts/
 │       ├── animations.js         # Clock animations
 │       ├── SearchModule.js       # Search & time conversion
 │       └── VerificationModule.js # Time verification UI
-└── README.md
+├── api/
+│   └── worldtime.php             # Optional PHP proxy for WorldTimeAPI
+├── icon*.png                     # PWA icons (16, 32, 192, 512)
+├── icon.svg                      # SVG icon
+├── favicon-*.png                 # Favicon files
+├── apple-touch-icon.png          # Apple touch icon
+├── app_v1.gif                    # Demo screenshot
+├── .gitignore                    # Git ignore file
+└── README.md                     # This file
 ```
 
 ## 🚀 Quick Start
@@ -40,52 +58,29 @@ time-ts/
 ### Option 1: Python HTTP Server
 
 ```bash
-cd time-ts
-python3 -m http.server 3003
-# Open http://localhost:3003
+python3 -m http.server 3001
+# Open http://localhost:3001
 ```
 
 ### Option 2: PHP Built-in Server
 
 ```bash
-cd time-ts
-php -S localhost:3003
-# Open http://localhost:3003
+php -S localhost:3001
+# Open http://localhost:3001
 ```
 
 ### Option 3: Node.js (if you have it)
 
 ```bash
-cd time-ts
-npx serve -p 3003
-# Open http://localhost:3003
+npx serve -p 3001
+# Open http://localhost:3001
 ```
 
 ### Option 4: Any Static File Server
 
-Just serve the `time-ts` folder from any web server!
+Just serve the `time-js` folder from any web server!
 
 ## 🌐 Deployment
-
-### GitHub Pages
-
-1. Create a new repo
-2. Upload `time-ts` folder contents to root
-3. Enable Pages in Settings → Pages → Deploy from main branch
-
-### Netlify
-
-1. Drag & drop the `time-ts` folder to Netlify
-2. Done! Your site is live
-
-### Vercel
-
-```bash
-cd time-ts
-vercel deploy --prod
-```
-
-### Traditional Hosting
 
 Upload files via FTP/SFTP to any web host. Works on Apache, Nginx, any server.
 
@@ -219,84 +214,12 @@ Plus timezone abbreviations: PST, EST, GMT, JST, IST, CET, AEST, etc.
 - **HTTPS ready** - Works on secure connections
 - **CORS friendly** - WorldTimeAPI supports CORS
 
-## ⚡ Performance
-
-- **~50-70 KB total** (gzipped)
-- **Instant parsing** - No server round trips
-- **Cached verifications** - 24-hour cache
-- **Lazy verification** - Sequential with delays
-- **Efficient rendering** - RequestAnimationFrame for animations
-
-## 🐛 Debugging
-
-Open browser DevTools Console to see:
-```
-🕐 TiME - Initializing client-side time converter...
-✓ Quotes module initialized
-✓ Verification module initialized
-✓ Search module initialized
-🚀 TiME is ready! Synch your watches!
-```
-
-## 🎯 Differences from Rails Version
-
-| Feature | Rails Version | Client-Side Version |
-|---------|--------------|---------------------|
-| **Backend** | Ruby/Rails | None |
-| **Parsing** | Server-side | Browser (TimeParser.js) |
-| **Verification** | Server API | Direct WorldTimeAPI |
-| **Deployment** | Heroku/VPS | Any static host |
-| **Dependencies** | Gemfile | None |
-| **Build** | Asset pipeline | None |
-| **Speed** | Network latency | Instant parsing |
-
-## 🚀 Development Workflow
-
-1. Edit any `.js` or `.html` file
-2. Refresh browser
-3. See changes immediately
-4. No build, no compile, no wait!
-
-## 📦 File Sizes
-
-```
-index.html                  ~30 KB
-TimeParser.js               ~10 KB
-TimeVerificationService.js  ~8 KB
-cityTimezoneMap.js          ~40 KB (1200+ cities!)
-modules/*.js                ~15 KB total
-────────────────────────────────
-Total:                      ~103 KB
-Gzipped:                    ~50 KB
-```
-
-## 🎓 Learning Resources
-
-This project is great for learning:
-- ES6 modules in practice
-- Native browser APIs
-- Timezone handling with Intl
-- SVG animations
-- CSS-only effects
-- Client-side architecture
-
-## 🤝 Contributing
-
-Since this is zero-dependency:
-1. Fork the repo
-2. Edit files directly
-3. Test in browser
-4. Submit PR
-
-No setup, no npm install, no problems!
-
 ## 📄 License
 
-MIT License - Same as the original Rails version
+MIT License
 
 ## 🙏 Acknowledgments
 
-- Port of the Rails TiME app by @boraoku
 - WorldTimeAPI for verification
 - Orbitron font by Google Fonts
 - Inspired by 1980s synthwave aesthetic
@@ -307,23 +230,14 @@ MIT License - Same as the original Rails version
 
 ### Start Development Server
 ```bash
-python3 -m http.server 3003
-```
-
-### Deploy to GitHub Pages
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git push origin main
-# Enable Pages in repo settings
+python3 -m http.server 3001
 ```
 
 ### Test Example Queries
 ```
-http://localhost:3003/?query=3_30pm-new-york--tokyo~paris
-http://localhost:3003/?query=noon-pst--est~gmt
-http://localhost:3003/?query=9am-london--sydney~singapore
+http://localhost:3001/?query=3_30pm-new-york--tokyo~paris
+http://localhost:3001/?query=noon-pst--est~gmt
+http://localhost:3001/?query=9am-london--sydney~singapore
 ```
 
 ---
