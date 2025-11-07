@@ -132,6 +132,7 @@ export const SearchModule = {
 
         // Update URL without reload - custom encoding
         const urlQuery = query
+          .toLowerCase()
           .replace(/:/g, '_')
           .replace(/,\s*/g, '~')
           .replace(/\s+and\s+/gi, '~')
