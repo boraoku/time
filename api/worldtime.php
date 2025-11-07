@@ -7,7 +7,7 @@
  */
 
 // Enable CORS - Allow requests from your domain
-header('Access-Control-Allow-Origin: *'); // For development. In production, change to: https://boraokumusoglu.net
+header('Access-Control-Allow-Origin: https://boraokumusoglu.net'); // * For development. In production, change to: https://boraokumusoglu.net
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Accept, User-Agent');
 header('Content-Type: application/json');
