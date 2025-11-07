@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TiME</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:title" content="TiME - Synch your watches!">
+  <meta property="og:description" content="A radical retro-styled time zone converter with 1200+ cities and 80s synthwave vibes">
+  <meta property="og:image" content="/icon-512.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TiME - Synch your watches!">
+  <meta name="twitter:description" content="A radical retro-styled time zone converter with 1200+ cities">
+  <meta name="twitter:image" content="/icon-512.png">
+
+  <!-- Additional SEO -->
+  <meta name="description" content="Convert time zones instantly with our retro 80s-styled time converter. Support for 1200+ cities worldwide. Just type like you speak: '3:30pm new york in tokyo, paris'">
+  <meta name="keywords" content="time zone converter, world clock, time sync, timezone, time converter, international time">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', monospace;
+      background: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(0, 255, 100, 0.1) 100%),
+        linear-gradient(90deg, transparent 0%, rgba(0, 255, 100, 0.05) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 100, 0.03) 2px,
+          rgba(0, 255, 100, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 100, 0.03) 2px,
+          rgba(0, 255, 100, 0.03) 4px
+        );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .grid-floor {
+      position: fixed;
+      bottom: 0;
+      left: -50%;
+      right: -50%;
+      height: 40%;
+      background-image:
+        linear-gradient(rgba(0, 255, 100, 0.5) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(0, 255, 100, 0.5) 2px, transparent 2px);
+      background-size: 50px 50px;
+      background-position: center center;
+      transform: perspective(200px) rotateX(60deg);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      border: 3px solid #00ff66;
+      border-radius: 0;
+      box-shadow:
+        0 0 40px rgba(0, 255, 100, 0.5),
+        0 0 80px rgba(0, 255, 100, 0.3),
+        inset 0 0 40px rgba(0, 255, 100, 0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 1200px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #00ff66, #00ff66, #00ff66, #00ff66);
+      z-index: -1;
+      animation: neonBorder 3s linear infinite;
+    }
+
+    @keyframes neonBorder {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.5; }
+    }
+
+    h1 {
+      background: linear-gradient(90deg, #00ff66 0%, #00ff66 25%, #88ff00 50%, #00ff66 75%, #00ff66 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 3em;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      text-shadow:
+        0 0 10px rgba(0, 255, 100, 0.2),
+        0 0 20px rgba(0, 255, 100, 0.2),
+        0 0 30px rgba(0, 255, 100, 0.2);
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.02); }
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #00ff66;
+      font-size: 0.9em;
+      margin-top: 0px;
+      margin-bottom: 30px;
+      letter-spacing: 10px;
+      text-transform: uppercase;
+      opacity: 0.8;
+      min-height: calc(0.9em * 1.4 * 3);
+    }
+
+    .input-section {
+      margin-bottom: 25px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 16px;
+      font-family: 'Orbitron', monospace;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00ff66;
+      color: #00ff66;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      outline: none;
+      box-shadow:
+        inset 0 0 20px rgba(0, 255, 100, 0.1),
+        0 0 20px rgba(0, 255, 100, 0.3);
+      resize: none;
+      overflow: hidden;
+      line-height: 1.4;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+
+    input[type="text"]:focus {
+      border-color: #00ff66;
+      box-shadow:
+        inset 0 0 20px rgba(0, 255, 100, 0.2),
+        0 0 30px rgba(0, 255, 100, 0.5);
+      background: rgba(0, 0, 0, 0.9);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(0, 255, 100, 0.5);
+      text-transform: none;
+      letter-spacing: 1px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(45deg, #00ff66 0%, #00ff66 100%);
+      color: #000;
+      border: none;
+      padding: 15px 40px;
+      font-size: 18px;
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: block;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 0 20px rgba(0, 255, 100, 0.5),
+        0 0 40px rgba(0, 255, 100, 0.3);
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .submit-btn:hover::before {
+      left: 100%;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow:
+        0 5px 30px rgba(0, 255, 100, 0.7),
+        0 5px 50px rgba(0, 255, 100, 0.5);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0) scale(1);
+    }
+
+    .error-message {
+      background: rgba(255, 0, 0, 0.2);
+      border: 2px solid #ff0066;
+      color: #ff66aa;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow:
+        0 0 20px rgba(255, 0, 102, 0.5),
+        inset 0 0 20px rgba(255, 0, 102, 0.1);
+    }
+
+    .clocks-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      margin-top: 40px;
+      animation: containerSlideIn 0.5s ease-out;
+    }
+
+    @keyframes containerSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .clock-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+      opacity: 1;
+      transform: scale(1) translateX(0) translateY(0);
+      position: relative;
+    }
+
+    .clock-wrapper.initial-appear {
+      animation: clockAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                float 3s ease-in-out infinite 1.3s;
+      opacity: 0;
+      transform: scale(0) rotate(-180deg);
+    }
+
+    .clock-wrapper.slide-in {
+      animation: slideInNew 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                float 3s ease-in-out infinite 1.3s;
+      opacity: 0;
+      transform: translateX(100px) scale(0.8);
+    }
+
+    .clock-wrapper.slide-out {
+      animation: slideOutOld 0.5s cubic-bezier(0.4, 0.0, 1, 1) forwards;
+      pointer-events: none;
+    }
+
+    .clock-wrapper.existing {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .clock-wrapper.reordering {
+      transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    @keyframes clockAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(-180deg);
+      }
+      50% {
+        opacity: 0.5;
+        transform: scale(1.1) rotate(10deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes slideInNew {
+      0% {
+        opacity: 0;
+        transform: translateX(100px) scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    @keyframes slideOutOld {
+      0% {
+        opacity: 1;
+        transform: translateX(0) scale(1) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-100px) scale(0.8) rotate(-10deg);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+      50% { transform: translateY(-10px) scale(1) rotate(0deg); }
+    }
+
+    .clock-wrapper.hands-animating {
+      animation-play-state: paused !important;
+    }
+
+    @keyframes rotateHourHand {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(var(--hour-angle));
+      }
+    }
+
+    @keyframes rotateMinuteHand {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(var(--minute-angle));
+      }
+    }
+
+    @keyframes updateHourHand {
+      from {
+        transform: rotate(var(--hour-angle-from));
+      }
+      to {
+        transform: rotate(var(--hour-angle));
+      }
+    }
+
+    @keyframes updateMinuteHand {
+      from {
+        transform: rotate(var(--minute-angle-from));
+      }
+      to {
+        transform: rotate(var(--minute-angle));
+      }
+    }
+
+    .hour-hand-group.animate-initial {
+      animation: rotateHourHand 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .minute-hand-group.animate-initial {
+      animation: rotateMinuteHand 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .hour-hand-group.animate-update {
+      animation: updateHourHand 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+    }
+
+    .minute-hand-group.animate-update {
+      animation: updateMinuteHand 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+    }
+
+    .clock-wrapper:hover {
+      transform: scale(1.1) translateY(-5px);
+    }
+
+    .analog-clock {
+      width: 175px;
+      height: 175px;
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .clock-face {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .clock-face.am {
+      background: radial-gradient(circle at center, #00ff66 0%, #336600 50%, #0a1a00 100%);
+      border: 3px solid #00ff66;
+      box-shadow:
+        0 0 40px rgba(0, 255, 100, 0.8),
+        inset 0 0 30px rgba(0, 255, 100, 0.3),
+        0 0 80px rgba(0, 255, 100, 0.4);
+    }
+
+    .clock-face.pm {
+      background: radial-gradient(circle at center, #00ff66 0%, #006633 50%, #001100 100%);
+      border: 3px solid #00ff66;
+      box-shadow:
+        0 0 40px rgba(0, 255, 100, 0.8),
+        inset 0 0 30px rgba(0, 255, 100, 0.3),
+        0 0 80px rgba(0, 255, 100, 0.4);
+    }
+
+    .clock-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      background: #88ff00;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      box-shadow:
+        0 0 20px rgba(136, 255, 0, 0.8),
+        0 0 40px rgba(136, 255, 0, 0.5);
+    }
+
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      border-radius: 3px;
+      transition: transform 0.5s cubic-bezier(0.4, 0.0, 0.2, 1);
+      animation: handPulse 1s ease-out 0.5s;
+    }
+
+    @keyframes handPulse {
+      0% {
+        filter: brightness(1);
+      }
+      50% {
+        filter: brightness(1.5) drop-shadow(0 0 15px rgba(0, 255, 100, 1));
+      }
+      100% {
+        filter: brightness(1);
+      }
+    }
+
+    .hour-hand {
+      width: 6px;
+      height: 35px;
+      margin-left: -3px;
+    }
+
+    .minute-hand {
+      width: 4px;
+      height: 45px;
+      margin-left: -2px;
+    }
+
+    .am .hand {
+      background: linear-gradient(to top, #00ff66, #ffffff);
+      box-shadow: 0 0 10px rgba(0, 255, 100, 0.8);
+    }
+
+    .pm .hand {
+      background: linear-gradient(to top, #00ff66, #ffffff);
+      box-shadow: 0 0 10px rgba(0, 255, 100, 0.8);
+    }
+
+    .clock-number {
+      position: absolute;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .am .clock-number {
+      color: #00ff66;
+      text-shadow: 0 0 5px rgba(0, 255, 100, 0.8);
+    }
+
+    .pm .clock-number {
+      color: #00ff66;
+      text-shadow: 0 0 5px rgba(0, 255, 100, 0.8);
+    }
+
+    .clock-number.twelve {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .clock-number.three {
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+    }
+
+    .clock-number.six {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .clock-number.nine {
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
+    }
+
+    .city-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #88ff00;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow:
+        0 0 10px rgba(136, 255, 0, 0.8),
+        0 0 20px rgba(136, 255, 0, 0.5);
+    }
+
+    .city-label {
+      position: relative;
+    }
+
+    .verification-status {
+      font-size: 10px;
+      font-weight: normal;
+      text-transform: none;
+      letter-spacing: 1px;
+      margin-top: 2px;
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+
+    .verification-status.pending {
+      color: #ffcc00;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .verification-status.verified {
+      color: #00ff66;
+    }
+
+    .verification-status.corrected {
+      color: #ff6600;
+      text-shadow: 0 0 5px rgba(255, 102, 0, 0.6);
+    }
+
+    .verification-status.error {
+      color: #ff3333;
+    }
+
+    .status-pending,
+    .status-verified,
+    .status-corrected,
+    .status-error {
+      display: inline-block;
+      padding: 0 4px;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .time-digital.time-corrected {
+      animation: flashCorrection 0.5s ease-out;
+    }
+
+    @keyframes flashCorrection {
+      0% {
+        color: #ff6600;
+        transform: scale(1.1);
+      }
+      100% {
+        color: #88ff00;
+        transform: scale(1);
+      }
+    }
+
+    .time-digital {
+      font-size: 14px;
+      color: #88ff00;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 100, 0.8);
+    }
+
+    .timezone-info {
+      font-size: 11px;
+      color: rgba(0, 255, 100, 0.8);
+      margin-top: 3px;
+      letter-spacing: 1px;
+    }
+
+    .example-text {
+      text-align: left;
+      color: rgba(0, 255, 100, 0.7);
+      font-size: 10px;
+      margin-top: 15px;
+      margin-left: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .example-link {
+      color: rgba(0, 255, 100, 0.7);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      position: relative;
+    }
+
+    .example-link:hover {
+      color: #00ff66;
+      text-shadow: 0 0 10px rgba(0, 255, 100, 0.8);
+      transform: translateX(5px);
+    }
+
+    .example-link::before {
+      content: '▸ ';
+      color: #00ff66;
+      margin-right: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .example-link:hover::before {
+      transform: translateX(3px);
+    }
+
+    .scanlines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      animation: scanlines 8s linear infinite;
+    }
+
+    @keyframes scanlines {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(10px); }
+    }
+
+    @media (min-width: 1024px) {
+      .subtitle {
+        font-size: 1.125em;
+        min-height: calc(1.125em * 1.4 * 3);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        letter-spacing: 3px;
+      }
+
+      .subtitle {
+        min-height: calc(0.9em * 1.4 * 3);
+      }
+
+      .analog-clock {
+        width: 140px;
+        height: 140px;
+      }
+
+      .hour-hand {
+        height: 25px;
+      }
+
+      .minute-hand {
+        height: 35px;
+      }
+
+      .clock-number {
+        font-size: 9px;
+      }
+
+      .city-name {
+        font-size: 14px;
+        letter-spacing: 2px;
+      }
+
+      .time-digital {
+        font-size: 12px;
+      }
+
+      .clocks-container {
+        gap: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        justify-items: center;
+      }
+
+      input[type="text"] {
+        font-size: 16px;
+        min-height: 45px;
+        height: auto;
+        padding: 10px 12px;
+        -webkit-text-size-adjust: 100%;
+        transform: scale(0.875);
+        transform-origin: left center;
+        width: 114%;
+      }
+
+      .submit-btn {
+        font-size: 16px;
+        padding: 12px 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .clocks-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .analog-clock {
+        width: 120px;
+        height: 120px;
+      }
+
+      .clock-wrapper {
+        max-width: 140px;
+      }
+
+      h1 {
+        font-size: 1.5em;
+        letter-spacing: 2px;
+      }
+
+      .subtitle {
+        letter-spacing: 5px;
+        font-size: 0.9em;
+        min-height: calc(0.9em * 1.4 * 4);
+        margin-top: 0px;
+        margin-bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-floor"></div>
+  <div class="scanlines"></div>
+
+  <div class="container">
+    <div class="subtitle" id="subtitle">Not an hour sooner, not an hour later.</div>
+
+    <div class="input-section">
+      <form id="time-form">
+        <div class="input-wrapper">
+          <input type="text"
+                 name="query"
+                 id="query-input"
+                 placeholder="Enter time query"
+                 autocomplete="off"
+                 autofocus
+                 spellcheck="false">
+        </div>
+      </form>
+
+      <div class="example-text" id="example-text">
+        Type or click to try:<br>
+        <br><a href="#" class="example-link" data-query="3:30pm new york in tokyo, paris">3:30pm new york in tokyo, paris</a><br>
+        <br><a href="#" class="example-link" data-query="noon pst in est and gmt">noon pst in est and gmt</a><br>
+        <br><a href="#" class="example-link" data-query="9am london in sydney and singapore">9am london in sydney and singapore</a><br>
+        <br><a href="#" class="example-link" data-query="midnight utc in jst, ist and cet">midnight utc in jst, ist and cet</a>
+      </div>
+    </div>
+
+    <div class="clocks-container" id="clocks-container"></div>
+  </div>
+
+  <!-- ES6 Modules -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
