@@ -6,7 +6,7 @@ TiME is a radical retro-styled time zone converter that transforms boring time c
   <img src="app_v1.gif" alt="Time Sync App Demo" width="100%" style="border-radius: 10px; box-shadow: 0 0 30px rgba(0, 255, 100, 0.5);">
 </div>
 
-## 0 dependencies, 0 build tools, Pure JS!**
+## 0 dependencies, 0 build tools, Pure JS!
 
 This is an almost[^1] pure client-side JS code. No Node.js, no npm, no bundlers - just upload and go! 
 
@@ -223,22 +223,6 @@ MIT License
 - WorldTimeAPI for verification
 - Orbitron font by Google Fonts
 - Inspired by 1980s synthwave aesthetic
-
----
-
-## 🎯 Quick Reference
-
-### Start Development Server
-```bash
-python3 -m http.server 3001
-```
-
-### Test Example Queries
-```
-http://localhost:3001/?query=3_30pm-new-york--tokyo~paris
-http://localhost:3001/?query=noon-pst--est~gmt
-http://localhost:3001/?query=9am-london--sydney~singapore
-```
 
 ---
 
