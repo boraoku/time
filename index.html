@@ -863,6 +863,13 @@
       text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
     }
 
+    .banner-badges {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
     .app-store-link {
       flex-shrink: 0;
       display: block;
@@ -874,13 +881,15 @@
     }
 
     .app-store-link:hover {
-      transform: scale(1.05);
       filter: brightness(1.2) drop-shadow(0 0 10px rgba(0, 255, 102, 0.6));
+    }
+
+    .app-store-link:hover .googleplay-badge {
+      filter: grayscale(100%) brightness(1.2) drop-shadow(0 0 10px rgba(0, 255, 102, 0.6));
     }
 
     .app-store-badge {
       height: 40px;
-      width: 120px;
       display: block;
       background: transparent;
       border: none;
@@ -888,6 +897,17 @@
       object-fit: contain;
       object-position: center;
       vertical-align: middle;
+    }
+
+    /* Google Play badge has internal padding in SVG, scale to match App Store badge */
+    .googleplay-badge {
+      height: 60px;
+      transform: scale(1);
+      filter: grayscale(100%);
+    }
+
+    .appstore-badge {
+      height: 40px;
     }
 
     @keyframes dropDown {
@@ -922,7 +942,19 @@
         font-size: 0.8em;
       }
 
+      .banner-badges {
+        gap: 8px;
+      }
+
       .app-store-badge {
+        height: 35px;
+      }
+
+      .googleplay-badge {
+        height: 52.5px;
+      }
+
+      .appstore-badge {
         height: 35px;
       }
     }
@@ -948,7 +980,19 @@
         line-height: 1.3;
       }
 
+      .banner-badges {
+        gap: 6px;
+      }
+
       .app-store-badge {
+        height: 30px;
+      }
+
+      .googleplay-badge {
+        height: 45px;
+      }
+
+      .appstore-badge {
         height: 30px;
       }
 
@@ -966,16 +1010,21 @@
   </style>
 </head>
 <body>
-  <!-- iOS App Banner -->
+  <!-- Mobile App Banner -->
   <div id="ios-banner" class="ios-banner hidden">
     <div class="banner-content">
       <img src="iosapp.png" alt="TiME iOS App" class="banner-icon">
       <div class="banner-text">
-        <span class="banner-slogan">Show your support for Retro Vibes!<br>Purchase TiME for iPhone, iPad & VisionOS<br>with Voice Input, Saved Recents</span>
+        <span class="banner-slogan">Show Retro Vibes!<br>Buy TiME for your mobile device for Voice Input, Real-time Verifications, Saved Inputs</span>
       </div>
-      <a href="https://itunes.apple.com/app/id6581480814" target="_blank" rel="noopener noreferrer" class="app-store-link">
-        <img src="appstore.svg" alt="Download on the App Store" class="app-store-badge">
-      </a>
+      <div class="banner-badges">
+        <a href="https://itunes.apple.com/app/id6581480814" target="_blank" rel="noopener noreferrer" class="app-store-link">
+          <img src="googleplay.svg" alt="Get it on Google Play" class="app-store-badge googleplay-badge">
+        </a>
+        <a href="https://itunes.apple.com/app/id6581480814" target="_blank" rel="noopener noreferrer" class="app-store-link">
+          <img src="appstore.svg" alt="Download on the App Store" class="app-store-badge appstore-badge">
+        </a>
+      </div>
     </div>
   </div>
 
